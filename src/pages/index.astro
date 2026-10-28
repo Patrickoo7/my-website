@@ -1,0 +1,261 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import QubitCanvas from '../components/QubitCanvas.astro';
+import TypingText from '../components/TypingText.astro';
+import CircuitDivider from '../components/CircuitDivider.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import BlochSphere from '../components/BlochSphere.astro';
+import { profile } from '../data/profile';
+import { url } from '../data/url';
+
+const featured = (await getCollection('projects', (p) => p.data.featured)).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <QubitCanvas />
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <p class="prompt">whoami</p>
+        <h1>
+          Hi, I'm <span class="grad-text">{profile.name}</span>
+        </h1>
+        <p class="ket-eq mono" aria-label="Quantum state: me equals a superposition of research and engineering">
+          |me⟩ = <span class="a">α</span>|research⟩ + <span class="b">β</span>|engineering⟩
+        </p>
+        <p class="lead">{profile.tagline}</p>
+        <p class="working mono">
+          <span class="dim">currently working on</span><br />
+          <TypingText words={profile.typing} />
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href={url('/research')}>For Academia → Research & CV</a>
+          <a class="btn" href={url('/projects')}>For Recruiters → Projects & Resume</a>
+        </div>
+      </div>
+      <div class="hero-photo">
+        <div class="orbit" aria-hidden="true"><span></span><span></span></div>
+        <img src={url('/profile.jpg')} alt={`Portrait of ${profile.name}`} width="800" height="800" />
+      </div>
+    </div>
+    <a class="scroll-hint mono" href="#about" aria-label="Scroll to content">↓ measure</a>
+  </section>
+
+  <section class="stats container" id="about">
+    {
+      profile.stats.map((s) => (
+        <div class="stat reveal">
+          <span class="value grad-text">{s.value}</span>
+          <span class="label">{s.label}</span>
+        </div>
+      ))
+    }
+  </section>
+
+  <CircuitDivider />
+
+  <section class="section container about-grid">
+    <div class="reveal">
+      <p class="prompt">cat about.md</p>
+      <h2>Engineer by trade, quantum by curiosity</h2>
+      {profile.bio.map((p) => <p class="lead">{p}</p>)}
+      <a class="btn" href={url('/about')}>More about me →</a>
+    </div>
+    <div class="reveal bloch-wrap">
+      <BlochSphere />
+      <p class="hint mono">Click the sphere to measure the qubit</p>
+    </div>
+  </section>
+
+  <CircuitDivider />
+
+  <section class="section container">
+    <div class="reveal">
+      <p class="prompt">ls projects/ --featured</p>
+      <h2>Selected work</h2>
+    </div>
+    <div class="grid">
+      {featured.map((p) => <ProjectCard {...p.data} />)}
+    </div>
+    <p class="more"><a class="btn" href={url('/projects')}>All projects →</a></p>
+  </section>
+
+  <section class="section container">
+    <div class="audiences">
+      <a class="card audience reveal" href={url('/research')}>
+        <span class="mono ket">|academia⟩</span>
+        <h3>Research & publications</h3>
+        <p>My interests in quantum error correction, CLEF 2026 papers, and research experience at Georgia Tech.</p>
+        <span class="mono go">open research.md →</span>
+      </a>
+      <a class="card audience reveal" href={url('/cv')}>
+        <span class="mono ket">|industry⟩</span>
+        <h3>Resume & experience</h3>
+        <p>4.5+ years building production computer-vision and LLM systems, from edge devices to cloud microservices.</p>
+        <span class="mono go">open resume.pdf →</span>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 100px 0 60px;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 160px;
+    background: linear-gradient(transparent, var(--bg));
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .ket-eq {
+    font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+    color: var(--text-dim);
+    margin-bottom: 1.2em;
+  }
+  .ket-eq .a { color: var(--accent-2); }
+  .ket-eq .b { color: var(--accent); }
+  .working {
+    font-size: 0.95rem;
+    min-height: 3.4em;
+  }
+  .dim { color: var(--text-dim); }
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .hero-photo {
+    position: relative;
+    justify-self: center;
+    width: min(100%, 340px);
+    aspect-ratio: 1;
+  }
+  .hero-photo img {
+    position: absolute;
+    inset: 12%;
+    width: 76%;
+    height: 76%;
+    object-fit: cover;
+    object-position: 50% 20%;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    box-shadow: 0 30px 80px -30px var(--violet);
+  }
+  .orbit {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px dashed color-mix(in srgb, var(--accent-2) 50%, transparent);
+    animation: spin 18s linear infinite;
+  }
+  .orbit::before {
+    content: '';
+    position: absolute;
+    inset: 6%;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    transform: rotateX(70deg);
+  }
+  .orbit span {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 16px var(--accent);
+    top: -6px;
+    left: calc(50% - 6px);
+  }
+  .orbit span:last-child {
+    top: auto;
+    bottom: -6px;
+    background: var(--accent-2);
+    box-shadow: 0 0 16px var(--accent-2);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    animation: bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob { 50% { transform: translate(-50%, 6px); } }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding-top: 24px;
+    padding-bottom: 48px;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 18px;
+    border-left: 2px solid var(--border);
+  }
+  .value { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+  .label { font-size: 0.88rem; color: var(--text-dim); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .bloch-wrap { text-align: center; }
+  .hint { font-size: 0.78rem; color: var(--text-dim); margin-top: 10px; }
+
+  .more { margin-top: 28px; text-align: center; }
+
+  .audiences {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .audience {
+    color: var(--text);
+    padding: 32px;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .audience:hover { text-decoration: none; transform: translateY(-4px); border-color: var(--accent); }
+  .audience p { color: var(--text-dim); }
+  .audience .ket { color: var(--accent-2); font-size: 0.85rem; }
+  .audience h3 { font-size: 1.5rem; margin-top: 8px; }
+  .go { color: var(--accent); font-size: 0.85rem; }
+
+  @media (max-width: 860px) {
+    .hero-inner, .about-grid, .audiences { grid-template-columns: 1fr; }
+    .hero-photo { order: -1; width: min(70%, 260px); }
+    .hero { padding-top: 90px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 420px) {
+    .cta .btn { width: 100%; justify-content: center; }
+  }
+</style>

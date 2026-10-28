@@ -1,0 +1,88 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CircuitDivider from '../components/CircuitDivider.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { profile } from '../data/profile';
+import { url } from '../data/url';
+
+const pubs = (await getCollection('publications')).sort((a, b) => b.data.year - a.data.year || a.data.order - b.data.order);
+const research = (await getCollection('projects', (p) => p.data.category === 'research')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="Research" description={`Research interests and publications of ${profile.name}: quantum error correction, quantum optimization, data-efficient learning.`}>
+  <section class="container page-head">
+    <p class="prompt">cat research.md</p>
+    <h1>Research</h1>
+    <p class="lead">
+      I want to build <strong>machine-learning decoders for quantum error correction</strong> that are accurate and fast enough for
+      real-time use. My path here runs through quantum optimization on real annealing hardware and data-efficient learning.
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href={url('/cv.pdf')} target="_blank" rel="noopener">Research CV (PDF) ↗</a>
+      <a class="btn" href={profile.links.orcid} target="_blank" rel="noopener">ORCID ↗</a>
+    </div>
+  </section>
+
+  <section class="section container">
+    <p class="prompt">grep -i interests</p>
+    <h2>Interests</h2>
+    <div class="grid">
+      {
+        profile.interests.map((i) => (
+          <div class:list={['card', 'interest', 'reveal', { primary: i.primary }]}>
+            {i.primary && <span class="mono badge">primary focus</span>}
+            <h3>{i.title}</h3>
+            <p>{i.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <CircuitDivider />
+
+  <section class="section container">
+    <p class="prompt">cat publications.bib</p>
+    <h2>Publications</h2>
+    <ol class="pubs">
+      {
+        pubs.map((p, i) => (
+          <li class="reveal">
+            <span class="num mono">[{pubs.length - i}]</span>
+            <div>
+              <h3>{p.data.url ? <a href={p.data.url} target="_blank" rel="noopener">{p.data.title}</a> : p.data.title}</h3>
+              <p class="authors" set:html={p.data.authors.replace(profile.name, `<strong>${profile.name}</strong>`)} />
+              <p class="venue mono">{p.data.venue}, {p.data.year}</p>
+              {p.data.note && <p class="note">★ {p.data.note}</p>}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="section container">
+    <p class="prompt">ls research/</p>
+    <h2>Research projects</h2>
+    <div class="grid">{research.map((p) => <ProjectCard {...p.data} />)}</div>
+  </section>
+</BaseLayout>
+
+<style>
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+  .lead strong { color: var(--text); }
+  .interest p { color: var(--text-dim); margin: 0; font-size: 0.95rem; }
+  .interest.primary { border-color: color-mix(in srgb, var(--accent-2) 55%, transparent); box-shadow: 0 18px 50px -30px var(--violet); }
+  .badge { font-size: 0.72rem; color: var(--accent-2); text-transform: uppercase; letter-spacing: 0.08em; }
+  .pubs { list-style: none; padding: 0; margin: 0; display: grid; gap: 28px; }
+  .pubs li { display: grid; grid-template-columns: 44px 1fr; gap: 8px; }
+  .num { color: var(--accent-2); padding-top: 2px; }
+  .pubs h3 { font-size: 1.08rem; line-height: 1.4; margin-bottom: 6px; }
+  .pubs h3 a { color: var(--text); }
+  .pubs h3 a:hover { color: var(--accent); }
+  .authors { color: var(--text-dim); margin: 0 0 2px; font-size: 0.95rem; }
+  .authors :global(strong) { color: var(--text); }
+  .venue { font-size: 0.82rem; color: var(--accent); margin: 0; }
+  .note { font-size: 0.88rem; color: var(--text-dim); margin: 4px 0 0; }
+</style>
