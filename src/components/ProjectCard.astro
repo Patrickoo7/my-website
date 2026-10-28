@@ -9,7 +9,10 @@ interface Props {
   link?: string;
   category?: string;
 }
+import { url } from '../data/url';
 const { title, summary, tags, year, highlight, repo, link, category } = Astro.props;
+const internal = link?.startsWith('/');
+const href = internal ? url(link!) : link;
 ---
 
 <article class="card project reveal" data-category={category} data-tags={tags.join('|')}>
@@ -25,7 +28,7 @@ const { title, summary, tags, year, highlight, repo, link, category } = Astro.pr
     (repo || link) && (
       <div class="links mono">
         {repo && <a href={repo} target="_blank" rel="noopener">code ↗</a>}
-        {link && <a href={link} target="_blank" rel="noopener">live ↗</a>}
+        {href && (internal ? <a href={href}>try it →</a> : <a href={href} target="_blank" rel="noopener">live ↗</a>)}
       </div>
     )
   }

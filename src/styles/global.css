@@ -24,6 +24,10 @@
   --accent-2: var(--violet-soft);
   --particle: 167, 139, 250;
   --particle-2: 103, 232, 249;
+  /* QEC demo + chart series (validated for CVD separation on this surface) */
+  --q-x: #8b5cf6;
+  --q-z: #0ea5c0;
+  --q-err: #f43f5e;
   color-scheme: dark;
 }
 
@@ -38,6 +42,9 @@
   --accent-2: #6d28d9;
   --particle: 124, 58, 237;
   --particle-2: 8, 145, 178;
+  --q-x: #6d28d9;
+  --q-z: #0891b2;
+  --q-err: #e11d48;
   color-scheme: light;
 }
 

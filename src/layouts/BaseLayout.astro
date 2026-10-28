@@ -30,6 +30,7 @@ const personLd = {
 const nav = [
   { href: '/about', label: 'about' },
   { href: '/research', label: 'research' },
+  { href: '/qec', label: 'qec lab' },
   { href: '/projects', label: 'projects' },
   { href: '/experience', label: 'experience' },
   { href: '/cv', label: 'cv' },
@@ -237,6 +238,7 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
   }
   .links a {
     display: inline-block;
+    white-space: nowrap;
     padding: 6px 10px;
     font-size: 0.9rem;
     color: var(--text-dim);
@@ -280,6 +282,12 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
     transition: transform 0.3s;
   }
 
+  @media (max-width: 1040px) {
+    .links a {
+      padding: 6px 5px;
+      font-size: 0.85rem;
+    }
+  }
   @media (max-width: 820px) {
     .menu-btn {
       display: flex;

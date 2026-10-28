@@ -11,7 +11,7 @@ const projects = defineCollection({
     year: z.number(),
     featured: z.boolean().default(false),
     repo: z.string().url().optional(),
-    link: z.string().url().optional(),
+    link: z.string().optional(), // absolute URL, or a site path like /qec
     category: z.enum(['research', 'engineering']).default('engineering'),
     highlight: z.string().optional(),
     order: z.number().default(0),
