@@ -1,0 +1,269 @@
+---
+// Logical vs physical error rate for d = 3 and d = 5 surface codes, computed
+// live in the browser by Monte Carlo (code-capacity, independent bit flips).
+---
+
+<figure class="threshold" data-threshold>
+  <figcaption>
+    <h3>Logical error rate vs physical error rate</h3>
+    <p class="sub">
+      Each point is a fresh Monte Carlo run in your browser, with the same minimum-weight decoder as above.
+      Lower is better.
+    </p>
+  </figcaption>
+
+  <ul class="legend" aria-label="Series">
+    <li><span class="key key-d3" aria-hidden="true"></span>d = 3 (9 qubits)</li>
+    <li><span class="key key-d5" aria-hidden="true"></span>d = 5 (25 qubits)</li>
+    <li><span class="key key-ref" aria-hidden="true"></span>unencoded qubit</li>
+  </ul>
+
+  <div class="plot">
+    <svg class="chart" role="img" aria-label="Line chart of logical error rate against physical error rate"></svg>
+    <div class="tip" role="presentation" hidden></div>
+  </div>
+
+  <p class="status mono" aria-live="polite">Running simulation…</p>
+  <div class="row">
+    <button type="button" class="btn rerun" disabled>Re-run simulation</button>
+  </div>
+
+  <details class="table-view">
+    <summary>Show data table</summary>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">physical p</th><th scope="col">d = 3</th><th scope="col">d = 5</th><th scope="col">trials per point</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </details>
+</figure>
+
+<style>
+  .threshold {
+    margin: 0;
+    display: grid;
+    gap: 14px;
+  }
+  figcaption h3 { margin-bottom: 4px; }
+  .sub { color: var(--text-dim); font-size: 0.92rem; margin: 0; max-width: 70ch; }
+  .legend {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+  .legend li { display: inline-flex; align-items: center; gap: 8px; }
+  .key { width: 22px; height: 0; border-top: 2px solid; display: inline-block; }
+  .key-d3 { border-color: var(--q-x); }
+  .key-d5 { border-color: var(--q-z); }
+  .key-ref { border-top: 2px dashed var(--text-dim); }
+  .plot { position: relative; }
+  .chart { width: 100%; height: auto; display: block; overflow: visible; }
+  .status { font-size: 0.82rem; color: var(--text-dim); margin: 0; }
+  .row { display: flex; gap: 10px; }
+  .rerun { cursor: pointer; }
+  .rerun:disabled { opacity: 0.5; cursor: progress; }
+
+  .tip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text);
+    box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+    z-index: 2;
+  }
+  .tip :global(.k) { display: inline-block; width: 12px; height: 0; border-top: 2px solid; margin-right: 6px; vertical-align: middle; }
+  .tip :global(.v) { font-family: var(--font-mono); }
+  .tip :global(.h) { color: var(--text-dim); font-family: var(--font-mono); }
+
+  .table-view summary { cursor: pointer; color: var(--accent); font-size: 0.9rem; }
+  .table-wrap { overflow-x: auto; margin-top: 10px; }
+  table { border-collapse: collapse; font: 0.82rem var(--font-mono); width: 100%; min-width: 420px; }
+  th, td { text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-dim); font-weight: 500; }
+
+  /* chart parts */
+  .chart :global(.grid) { stroke: var(--border); stroke-width: 1; }
+  .chart :global(.axis-label), .chart :global(.tick) { fill: var(--text-dim); font: 12px var(--font-mono); }
+  .chart :global(.axis-title) { fill: var(--text-dim); font: 13px var(--font-sans); }
+  .chart :global(.line) { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .chart :global(.d3) { stroke: var(--q-x); }
+  .chart :global(.d5) { stroke: var(--q-z); }
+  .chart :global(.ref) { stroke: var(--text-dim); stroke-dasharray: 5 5; stroke-width: 1.5; fill: none; }
+  .chart :global(.pt) { stroke: var(--bg); stroke-width: 2; }
+  .chart :global(.pt.d3) { fill: var(--q-x); }
+  .chart :global(.pt.d5) { fill: var(--q-z); }
+  .chart :global(.direct) { font: 600 12px var(--font-mono); fill: var(--text); }
+  .chart :global(.cross) { stroke: var(--text-dim); stroke-dasharray: 2 4; }
+  .chart :global(.cross-label) { fill: var(--text); font: 12px var(--font-sans); }
+  .chart :global(.hair) { stroke: var(--text-dim); stroke-width: 1; }
+</style>
+
+<script>
+  import { buildCode, logicalErrorCount, rng } from '../scripts/surfaceCode';
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const PS = [0.01, 0.015, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.12, 0.14, 0.17, 0.2];
+  const trialsFor = (p: number) => (p <= 0.03 ? 200_000 : p <= 0.06 ? 80_000 : 40_000);
+  const W = 720, H = 420, M = { l: 64, r: 64, t: 16, b: 52 };
+  const X0 = 0.01, X1 = 0.2, Y0 = 1e-4, Y1 = 0.5;
+  const sx = (p: number) => M.l + ((Math.log10(p) - Math.log10(X0)) / (Math.log10(X1) - Math.log10(X0))) * (W - M.l - M.r);
+  const sy = (v: number) => M.t + (1 - (Math.log10(Math.max(v, Y0)) - Math.log10(Y0)) / (Math.log10(Y1) - Math.log10(Y0))) * (H - M.t - M.b);
+  const tickPct = (v: number) => `${+(v * 100).toPrecision(2)}%`;
+  const pct = (v: number) => (v >= 0.1 ? `${(v * 100).toFixed(0)}%` : v >= 0.01 ? `${(v * 100).toFixed(1)}%` : `${(v * 100).toFixed(2)}%`);
+
+  type Pt = { p: number; d3: number; d5: number; trials: number; f3: number; f5: number };
+
+  function el<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>, parent?: Element) {
+    const node = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, String(v));
+    parent?.appendChild(node);
+    return node;
+  }
+
+  function init(fig: HTMLElement) {
+    const svg = fig.querySelector<SVGSVGElement>('.chart')!;
+    const tip = fig.querySelector<HTMLElement>('.tip')!;
+    const status = fig.querySelector<HTMLElement>('.status')!;
+    const rerun = fig.querySelector<HTMLButtonElement>('.rerun')!;
+    const tbody = fig.querySelector('tbody')!;
+    const codes = { 3: buildCode(3), 5: buildCode(5) };
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    let data: Pt[] = [];
+    let layer: SVGGElement;
+
+    function axes() {
+      svg.replaceChildren();
+      const g = el('g', {}, svg);
+      for (let e = -4; e <= 0; e++) {
+        const v = 10 ** e;
+        if (v > Y1) continue;
+        el('line', { x1: M.l, x2: W - M.r, y1: sy(v), y2: sy(v), class: 'grid' }, g);
+        const t = el('text', { x: M.l - 10, y: sy(v) + 4, 'text-anchor': 'end', class: 'tick' }, g);
+        t.textContent = tickPct(v);
+      }
+      for (const p of [0.01, 0.02, 0.05, 0.1, 0.2]) {
+        el('line', { x1: sx(p), x2: sx(p), y1: M.t, y2: H - M.b, class: 'grid' }, g);
+        const t = el('text', { x: sx(p), y: H - M.b + 20, 'text-anchor': 'middle', class: 'tick' }, g);
+        t.textContent = tickPct(p);
+      }
+      const xt = el('text', { x: (M.l + W - M.r) / 2, y: H - 6, 'text-anchor': 'middle', class: 'axis-title' }, g);
+      xt.textContent = 'physical error rate p (per qubit)';
+      const yt = el('text', { x: 14, y: (M.t + H - M.b) / 2, 'text-anchor': 'middle', class: 'axis-title', transform: `rotate(-90 14 ${(M.t + H - M.b) / 2})` }, g);
+      yt.textContent = 'logical error rate';
+      el('path', { d: `M${sx(X0)},${sy(X0)} L${sx(X1)},${sy(X1)}`, class: 'ref' }, g);
+      layer = el('g', {}, svg);
+    }
+
+    function crossing() {
+      for (let i = 1; i < data.length; i++) {
+        const a = data[i - 1], b = data[i];
+        const da = Math.log(a.d5) - Math.log(a.d3), db = Math.log(b.d5) - Math.log(b.d3);
+        if (a.f5 && b.f5 && da < 0 && db >= 0) {
+          const t = da / (da - db);
+          return Math.exp(Math.log(a.p) + t * (Math.log(b.p) - Math.log(a.p)));
+        }
+      }
+      return null;
+    }
+
+    function render() {
+      layer.replaceChildren();
+      for (const key of ['d3', 'd5'] as const) {
+        const pts = data.filter((d) => d[key === 'd3' ? 'f3' : 'f5'] > 0);
+        if (pts.length > 1) el('path', { d: pts.map((d, i) => `${i ? 'L' : 'M'}${sx(d.p)},${sy(d[key])}`).join(''), class: `line ${key}` }, layer);
+        for (const d of pts) el('circle', { cx: sx(d.p), cy: sy(d[key]), r: 4, class: `pt ${key}` }, layer);
+      }
+      if (data.length === PS.length) {
+        const last = data[data.length - 1];
+        const y3 = sy(last.d3), y5 = sy(last.d5);
+        const [a, b] = y3 < y5 ? [y3, y5] : [y5, y3];
+        const gap = Math.max(0, 14 - (b - a)) / 2;
+        el('text', { x: W - M.r + 8, y: (y3 < y5 ? y3 - gap : y3 + gap) + 4, class: 'direct' }, layer).textContent = 'd=3';
+        el('text', { x: W - M.r + 8, y: (y5 < y3 ? y5 - gap : y5 + gap) + 4, class: 'direct' }, layer).textContent = 'd=5';
+        const c = crossing();
+        if (c) {
+          el('line', { x1: sx(c), x2: sx(c), y1: M.t, y2: H - M.b, class: 'cross' }, layer);
+          el('text', { x: sx(c) - 8, y: M.t + 14, 'text-anchor': 'end', class: 'cross-label' }, layer).textContent = `curves cross ≈ ${pct(c)}`;
+          status.textContent = `Done. Below p ≈ ${pct(c)} the bigger code wins and adding qubits helps; above it, adding qubits makes things worse.`;
+        } else {
+          status.textContent = 'Done.';
+        }
+      }
+      tbody.replaceChildren(
+        ...data.map((d) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${pct(d.p)}</td><td>${d.d3.toExponential(2)}</td><td>${d.f5 ? d.d5.toExponential(2) : '< ' + (1 / d.trials).toExponential(0)}</td><td>${d.trials.toLocaleString()}</td>`;
+          return tr;
+        })
+      );
+    }
+
+    async function run() {
+      rerun.disabled = true;
+      data = [];
+      axes();
+      const rand = rng((Math.random() * 2 ** 31) | 0);
+      for (const p of PS) {
+        status.textContent = `Simulating p = ${pct(p)}…`;
+        await new Promise((r) => setTimeout(r, 0)); // keep the page responsive between points
+        const trials = trialsFor(p);
+        const f3 = logicalErrorCount(codes[3], p, trials, rand);
+        const f5 = logicalErrorCount(codes[5], p, trials, rand);
+        data.push({ p, trials, f3, f5, d3: f3 / trials, d5: f5 / trials });
+        render();
+      }
+      rerun.disabled = false;
+    }
+
+    // hover: snap a crosshair to the nearest simulated p
+    const hair = () => svg.querySelector<SVGLineElement>('.hair');
+    svg.addEventListener('pointermove', (e) => {
+      if (!data.length) return;
+      const box = svg.getBoundingClientRect();
+      const x = ((e.clientX - box.left) / box.width) * W;
+      const d = data.reduce((best, cur) => (Math.abs(sx(cur.p) - x) < Math.abs(sx(best.p) - x) ? cur : best));
+      let h = hair();
+      if (!h) h = el('line', { class: 'hair', y1: M.t, y2: H - M.b }, svg);
+      h.setAttribute('x1', String(sx(d.p)));
+      h.setAttribute('x2', String(sx(d.p)));
+      tip.hidden = false;
+      tip.innerHTML = `<div class="h">p = ${pct(d.p)} · ${d.trials.toLocaleString()} trials</div>
+        <div><span class="k" style="border-color:var(--q-x)"></span>d = 3 &nbsp;<span class="v">${pct(d.d3)}</span></div>
+        <div><span class="k" style="border-color:var(--q-z)"></span>d = 5 &nbsp;<span class="v">${d.f5 ? pct(d.d5) : '< ' + pct(1 / d.trials)}</span></div>
+        <div><span class="k" style="border-top-style:dashed;border-color:var(--text-dim)"></span>unencoded &nbsp;<span class="v">${pct(d.p)}</span></div>`;
+      const px = (sx(d.p) / W) * box.width;
+      const left = px > box.width / 2 ? px - tip.offsetWidth - 14 : px + 14;
+      tip.style.left = `${left}px`;
+      tip.style.top = `${(M.t / H) * box.height + 8}px`;
+    });
+    svg.addEventListener('pointerleave', () => {
+      tip.hidden = true;
+      hair()?.remove();
+    });
+
+    rerun.addEventListener('click', run);
+    // start once the chart scrolls near the viewport
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        io.disconnect();
+        run();
+      }
+    }, { rootMargin: '200px' });
+    io.observe(fig);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-threshold]').forEach(init);
+</script>
