@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../data/url';
+---
+
+<BaseLayout title="404">
+  <section class="container page-head nf">
+    <p class="prompt">cd ./this-page</p>
+    <h1 class="mono"><span class="grad-text">|404⟩</span></h1>
+    <p class="lead">This page collapsed into a state that doesn't exist. Measurement inconclusive.</p>
+    <a class="btn btn-primary" href={url('/')}>Return to |home⟩</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf { min-height: 70vh; }
+  h1 { font-size: clamp(4rem, 14vw, 8rem); }
+</style>

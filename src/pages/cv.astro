@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { profile } from '../data/profile';
+import { url } from '../data/url';
+
+const docs = [
+  { id: 'cv', file: '/cv.pdf', label: 'Research CV', ket: 'academia', blurb: 'For PhD admissions and research positions: interests, publications and research experience.' },
+  { id: 'resume', file: '/resume.pdf', label: 'Resume', ket: 'industry', blurb: 'For engineering roles: production AI systems, impact and core skills.' },
+];
+---
+
+<BaseLayout title="CV & Resume" description={`Download the research CV and resume of ${profile.name}.`}>
+  <section class="container page-head">
+    <p class="prompt">open cv.pdf resume.pdf</p>
+    <h1>CV & Resume</h1>
+    <p class="lead">Two versions of the same story. Pick the one that fits.</p>
+  </section>
+
+  <section class="container">
+    <div class="docs">
+      {
+        docs.map((d) => (
+          <div class="card doc reveal">
+            <span class="mono ket">|{d.ket}⟩</span>
+            <h2>{d.label}</h2>
+            <p>{d.blurb}</p>
+            <div class="actions">
+              <a class="btn btn-primary" href={url(d.file)} target="_blank" rel="noopener">View PDF ↗</a>
+              <a class="btn" href={url(d.file)} download={`Prateek_Awate_${d.label.replace(' ', '_')}.pdf`}>Download</a>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="container section">
+    <p class="prompt">preview cv.pdf</p>
+    <object class="pdf" data={url('/cv.pdf')} type="application/pdf" aria-label="Research CV preview">
+      <p>Your browser can't preview PDFs here. <a href={url('/cv.pdf')}>Open the CV</a> instead.</p>
+    </object>
+  </section>
+</BaseLayout>
+
+<style>
+  .docs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .doc { padding: 32px; }
+  .doc p { color: var(--text-dim); }
+  .ket { color: var(--accent-2); font-size: 0.85rem; }
+  .doc h2 { margin-top: 6px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pdf { width: 100%; height: 85vh; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-elev); }
+  @media (max-width: 760px) {
+    .docs { grid-template-columns: 1fr; }
+    .pdf { height: 70vh; }
+  }
+</style>

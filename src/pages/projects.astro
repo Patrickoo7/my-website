@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { profile } from '../data/profile';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const filters = ['all', 'research', 'engineering'];
+---
+
+<BaseLayout title="Projects" description={`Projects by ${profile.name}: quantum annealing, LLM systems, computer vision and edge AI.`}>
+  <section class="container page-head">
+    <p class="prompt">ls -la projects/</p>
+    <h1>Projects</h1>
+    <p class="lead">Research on quantum optimization and data-efficient learning, plus production AI systems I've designed and shipped.</p>
+    <div class="filters mono" role="group" aria-label="Filter projects">
+      {filters.map((f, i) => <button type="button" data-filter={f} aria-pressed={i === 0 ? 'true' : 'false'}>|{f}⟩</button>)}
+    </div>
+  </section>
+
+  <section class="container section-tight">
+    <div class="grid" id="project-grid">{projects.map((p) => <ProjectCard {...p.data} />)}</div>
+  </section>
+</BaseLayout>
+
+<style>
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .filters button {
+    font: inherit;
+    font-size: 0.88rem;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filters button[aria-pressed='true'] { color: #fff; background: var(--grad); border-color: transparent; }
+  .section-tight { padding-bottom: 80px; }
+  :global(.project.hidden) { display: none; }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filters button');
+  const cards = document.querySelectorAll<HTMLElement>('#project-grid .project');
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => {
+      const f = b.dataset.filter;
+      buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      cards.forEach((c) => c.classList.toggle('hidden', f !== 'all' && c.dataset.category !== f));
+    })
+  );
+</script>

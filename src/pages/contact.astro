@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { profile } from '../data/profile';
+
+const links = [
+  { label: 'Email', value: profile.email, href: `mailto:${profile.email}` },
+  { label: 'GitHub', value: 'Patrickoo7', href: profile.links.github },
+  { label: 'LinkedIn', value: 'awateprateek', href: profile.links.linkedin },
+  { label: 'ORCID', value: '0009-0002-1878-9700', href: profile.links.orcid },
+  { label: 'Google Scholar', value: 'profile', href: profile.links.scholar },
+].filter((l) => l.href);
+---
+
+<BaseLayout title="Contact" description={`Get in touch with ${profile.name}.`}>
+  <section class="container page-head">
+    <p class="prompt">ping {profile.shortName.toLowerCase()}</p>
+    <h1>Let's <span class="grad-text">entangle</span></h1>
+    <p class="lead">
+      I'm open to PhD positions in quantum computing, research collaborations, and AI/ML engineering roles. The fastest way to reach me is email.
+    </p>
+  </section>
+
+  <section class="container section contact">
+    <ul class="links">
+      {
+        links.map((l) => (
+          <li class="reveal">
+            <a class="card row" href={l.href} target={l.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+              <span class="mono label">{l.label}</span>
+              <span class="value">{l.value}</span>
+              <span class="arrow">↗</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    {
+      profile.formspreeId && (
+        <form class="card form reveal" action={`https://formspree.io/f/${profile.formspreeId}`} method="POST">
+          <label>Name<input name="name" required autocomplete="name" /></label>
+          <label>Email<input name="email" type="email" required autocomplete="email" /></label>
+          <label>Message<textarea name="message" rows="5" required /></label>
+          <button class="btn btn-primary" type="submit">Send message</button>
+        </form>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .contact { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); align-items: start; }
+  .links { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .row { display: grid; grid-template-columns: 130px 1fr auto; align-items: center; gap: 12px; color: var(--text); padding: 18px 22px; transition: border-color 0.2s, transform 0.2s; }
+  .row:hover { text-decoration: none; border-color: var(--accent); transform: translateX(4px); }
+  .label { color: var(--text-dim); font-size: 0.85rem; }
+  .value { overflow-wrap: anywhere; }
+  .arrow { color: var(--accent); }
+  .form { display: grid; gap: 14px; }
+  label { display: grid; gap: 6px; font-size: 0.9rem; color: var(--text-dim); }
+  input, textarea { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  @media (max-width: 480px) { .row { grid-template-columns: 1fr auto; } .label { grid-column: 1 / -1; } }
+</style>
