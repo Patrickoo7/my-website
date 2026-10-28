@@ -1,0 +1,68 @@
+---
+interface Item {
+  role: string;
+  org: string;
+  start: string;
+  end: string;
+  kind: string;
+  html: string;
+}
+interface Props { items: Item[] }
+const { items } = Astro.props;
+---
+
+<ol class="timeline">
+  {
+    items.map((it) => (
+      <li class="reveal" data-kind={it.kind}>
+        <span class="node" aria-hidden="true" />
+        <div class="meta mono">
+          <span>{it.start === it.end ? it.start : `${it.start} → ${it.end}`}</span>
+          <span class="kind">|{it.kind}⟩</span>
+        </div>
+        <h3>{it.role}</h3>
+        <p class="org">{it.org}</p>
+        <div class="body" set:html={it.html} />
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 28px;
+    position: relative;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: linear-gradient(var(--violet), var(--cyan), transparent);
+    opacity: 0.6;
+  }
+  li { position: relative; padding-bottom: 36px; }
+  .node {
+    position: absolute;
+    left: -28px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 15%, transparent);
+  }
+  li[data-kind='research'] .node { border-color: var(--accent-2); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-2) 18%, transparent); }
+  .meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; color: var(--text-dim); }
+  .kind { color: var(--accent-2); }
+  h3 { margin: 4px 0 0; }
+  .org { color: var(--accent); margin: 0 0 8px; font-weight: 500; }
+  .body { color: var(--text-dim); font-size: 0.95rem; }
+  .body :global(ul) { margin: 0; padding-left: 1.1em; }
+  .body :global(li) { padding: 0; margin-bottom: 4px; }
+</style>
