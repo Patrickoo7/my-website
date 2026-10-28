@@ -12,6 +12,20 @@ interface Props {
 const { title, description = `${profile.name}: ${profile.role}. ${profile.tagline}` } = Astro.props;
 const fullTitle = title ? `${title} · ${profile.name}` : `${profile.name} · ${profile.role}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(url('/og.jpg'), Astro.site);
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  jobTitle: profile.role,
+  description: profile.tagline,
+  url: new URL(url('/'), Astro.site).href,
+  image: new URL(url('/profile.jpg'), Astro.site).href,
+  email: `mailto:${profile.email}`,
+  alumniOf: profile.education.map((e) => ({ '@type': 'CollegeOrUniversity', name: e.school.split(',')[0] })),
+  knowsAbout: ['Quantum error correction', 'Quantum computing', 'Quantum annealing', 'Machine learning', 'Large language models'],
+  sameAs: Object.values(profile.links).filter(Boolean),
+};
 
 const nav = [
   { href: '/about', label: 'about' },
@@ -37,7 +51,14 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${profile.name}: ${profile.role}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+    <link rel="sitemap" href={url('/sitemap-index.xml')} />
+    <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
     <meta name="theme-color" content="#07070d" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -48,11 +69,26 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
     />
 
     <script is:inline>
-      // Apply the saved theme before paint to avoid a flash.
-      try {
-        const t = localStorage.getItem('theme');
-        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
-      } catch {}
+      // Mark JS as available (enables scroll-reveal), and apply the saved
+      // theme, falling back to the system preference, before paint.
+      document.documentElement.classList.add('js');
+      (function () {
+        let saved = null;
+        try { saved = localStorage.getItem('theme'); } catch {}
+        const mq = window.matchMedia('(prefers-color-scheme: light)');
+        const apply = (t) => (document.documentElement.dataset.theme = t);
+        if (saved === 'light' || saved === 'dark') apply(saved);
+        else {
+          apply(mq.matches ? 'light' : 'dark');
+          mq.addEventListener('change', (e) => {
+            let s = null;
+            try { s = localStorage.getItem('theme'); } catch {}
+            if (s) return;
+            apply(e.matches ? 'light' : 'dark');
+            window.dispatchEvent(new CustomEvent('themechange'));
+          });
+        }
+      })();
     </script>
   </head>
   <body>
@@ -60,8 +96,8 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
 
     <header class="site-header">
       <nav class="container nav" aria-label="Main">
-        <a class="brand mono" href={url('/')} aria-label="Home">
-          |<span class="grad-text">{profile.shortName}</span>⟩
+        <a class="brand mono" href={url('/')} aria-label={`${profile.name}, home`}>
+          <span aria-hidden="true">|<span class="grad-text">{profile.shortName}</span>⟩</span>
         </a>
 
         <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
@@ -77,9 +113,9 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
                   class:list={['mono', { active: current === item.href }]}
                   aria-current={current === item.href ? 'page' : undefined}
                 >
-                  <span class="ket">|</span>
+                  <span class="ket" aria-hidden="true">|</span>
                   {item.label}
-                  <span class="ket">⟩</span>
+                  <span class="ket" aria-hidden="true">⟩</span>
                 </a>
               </li>
             ))
@@ -95,8 +131,8 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
 
     <footer class="site-footer">
       <div class="container foot">
-        <p class="mono">
-          <span class="dim">⟨visitor|</span>thanks<span class="dim">⟩</span> = 1
+        <p class="mono" aria-label="Thanks for visiting">
+          <span aria-hidden="true"><span class="dim">⟨visitor|</span>thanks<span class="dim">⟩</span> = 1</span>
         </p>
         <p class="dim">
           © {new Date().getFullYear()} {profile.name} · Built with Astro, hosted on GitHub Pages
@@ -113,10 +149,20 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
 
       // Mobile menu
       const btn = document.querySelector<HTMLButtonElement>('.menu-btn');
-      btn?.addEventListener('click', () => {
-        const open = document.body.classList.toggle('menu-open');
-        btn.setAttribute('aria-expanded', String(open));
+      const setMenu = (open: boolean) => {
+        document.body.classList.toggle('menu-open', open);
+        btn?.setAttribute('aria-expanded', String(open));
+        btn?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      };
+      btn?.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+      document.querySelectorAll('#nav-links a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.body.classList.contains('menu-open')) {
+          setMenu(false);
+          btn?.focus();
+        }
       });
+      window.matchMedia('(min-width: 821px)').addEventListener('change', (e) => e.matches && setMenu(false));
 
       // Scroll reveal
       const els = document.querySelectorAll('.reveal');
@@ -247,7 +293,8 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
       background: var(--bg-elev);
       border-bottom: 1px solid var(--border);
       transform: translateY(-120%);
-      transition: transform 0.35s ease;
+      visibility: hidden; /* keeps closed links out of the tab order */
+      transition: transform 0.35s ease, visibility 0s linear 0.35s;
       z-index: -1;
     }
     .links a {
@@ -260,6 +307,8 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
     }
     :global(body.menu-open) .links {
       transform: none;
+      visibility: visible;
+      transition: transform 0.35s ease, visibility 0s;
     }
     :global(body.menu-open) .menu-btn span:first-child {
       transform: translateY(4px) rotate(45deg);
