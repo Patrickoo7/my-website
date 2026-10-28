@@ -224,12 +224,13 @@ code,
 }
 
 /* ---------- Scroll reveal ---------- */
-.reveal {
+/* only hidden when JS is running, so content never disappears without it */
+.js .reveal {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
-.reveal.is-visible {
+.js .reveal.is-visible {
   opacity: 1;
   transform: none;
 }
@@ -245,7 +246,7 @@ code,
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
-  .reveal {
+  .js .reveal {
     opacity: 1;
     transform: none;
   }
