@@ -2,7 +2,7 @@
 export const profile = {
   name: 'Prateek Awate',
   role: 'AI/ML Engineer',
-  tagline: 'Published research in quantum optimization; focused on machine-learning decoders for quantum error correction.',
+  tagline: 'Published research in quantum optimization; now working toward machine-learning decoders for quantum error correction.',
   openTo: 'Open to PhD positions in quantum computing, research collaborations, and AI/ML engineering roles.',
   location: 'Pune, India',
   email: 'awateprateek@gmail.com',
