@@ -7,8 +7,8 @@ import { profile } from '../data/profile';
 
 <BaseLayout title="About" description={`About ${profile.name}: background, education, skills and research interests.`}>
   <section class="container page-head">
-    <p class="prompt">cat about.md</p>
-    <h1>About <span class="grad-text">me</span></h1>
+    <p class="eyebrow">Background</p>
+    <h1>About</h1>
   </section>
 
   <section class="container intro">
@@ -21,7 +21,6 @@ import { profile } from '../data/profile';
   <CircuitDivider />
 
   <section class="section container">
-    <p class="prompt">ls education/</p>
     <h2>Education</h2>
     <div class="edu">
       {
@@ -38,7 +37,6 @@ import { profile } from '../data/profile';
   </section>
 
   <section class="section container">
-    <p class="prompt">pip list --skills</p>
     <h2>Skills</h2>
     <div class="grid">
       {
@@ -54,12 +52,10 @@ import { profile } from '../data/profile';
 
   <section class="section container two">
     <div class="reveal">
-      <p class="prompt">cat certifications.txt</p>
       <h2>Certifications</h2>
       <ul class="list">{profile.certifications.map((c) => <li>{c}</li>)}</ul>
     </div>
     <div class="reveal">
-      <p class="prompt">locale</p>
       <h2>Languages</h2>
       <p class="lead">{profile.languages}</p>
     </div>

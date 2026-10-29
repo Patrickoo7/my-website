@@ -28,13 +28,12 @@ const personLd = {
 };
 
 const nav = [
-  { href: '/about', label: 'about' },
-  { href: '/research', label: 'research' },
-  { href: '/qec', label: 'qec lab' },
-  { href: '/projects', label: 'projects' },
-  { href: '/experience', label: 'experience' },
-  { href: '/cv', label: 'cv' },
-  { href: '/contact', label: 'contact' },
+  { href: '/about', label: 'About' },
+  { href: '/research', label: 'Research' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/experience', label: 'Experience' },
+  { href: '/cv', label: 'CV' },
+  { href: '/contact', label: 'Contact' },
 ];
 const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), '').replace(/\/$/, '') || '/';
 ---
@@ -97,8 +96,8 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
 
     <header class="site-header">
       <nav class="container nav" aria-label="Main">
-        <a class="brand mono" href={url('/')} aria-label={`${profile.name}, home`}>
-          <span aria-hidden="true">|<span class="grad-text">{profile.shortName}</span>⟩</span>
+        <a class="brand" href={url('/')}>
+          <span class="brand-mark" aria-hidden="true"></span>{profile.name}
         </a>
 
         <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
@@ -111,12 +110,10 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
               <li>
                 <a
                   href={url(item.href)}
-                  class:list={['mono', { active: current === item.href }]}
+                  class:list={[{ active: current === item.href }]}
                   aria-current={current === item.href ? 'page' : undefined}
                 >
-                  <span class="ket" aria-hidden="true">|</span>
                   {item.label}
-                  <span class="ket" aria-hidden="true">⟩</span>
                 </a>
               </li>
             ))
@@ -132,12 +129,13 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
 
     <footer class="site-footer">
       <div class="container foot">
-        <p class="mono" aria-label="Thanks for visiting">
-          <span aria-hidden="true"><span class="dim">⟨visitor|</span>thanks<span class="dim">⟩</span> = 1</span>
+        <p>
+          <a href={`mailto:${profile.email}`}>{profile.email}</a>
+          <span class="dim"> · </span><a href={profile.links.github} target="_blank" rel="noopener">GitHub</a>
+          <span class="dim"> · </span><a href={profile.links.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+          <span class="dim"> · </span><a href={profile.links.orcid} target="_blank" rel="noopener">ORCID</a>
         </p>
-        <p class="dim">
-          © {new Date().getFullYear()} {profile.name} · Built with Astro, hosted on GitHub Pages
-        </p>
+        <p class="dim">© {new Date().getFullYear()} {profile.name}</p>
       </div>
     </footer>
 
@@ -221,9 +219,21 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
     height: 68px;
   }
   .brand {
-    font-size: 1.3rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05rem;
     font-weight: 700;
+    letter-spacing: -0.01em;
     color: var(--text);
+    white-space: nowrap;
+  }
+  .brand-mark {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--grad);
+    box-shadow: 0 0 12px var(--violet);
   }
   .brand:hover {
     text-decoration: none;
@@ -239,8 +249,9 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
   .links a {
     display: inline-block;
     white-space: nowrap;
-    padding: 6px 10px;
-    font-size: 0.9rem;
+    padding: 6px 12px;
+    font-size: 0.92rem;
+    font-weight: 500;
     color: var(--text-dim);
     border-radius: 8px;
     transition: color 0.2s, background 0.2s;
@@ -250,15 +261,6 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
     color: var(--text);
     text-decoration: none;
     background: var(--bg-card);
-  }
-  .ket {
-    color: var(--accent-2);
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .links a:hover .ket,
-  .links a.active .ket {
-    opacity: 1;
   }
 
   .menu-btn {
@@ -284,8 +286,7 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
 
   @media (max-width: 1040px) {
     .links a {
-      padding: 6px 5px;
-      font-size: 0.85rem;
+      padding: 6px 8px;
     }
   }
   @media (max-width: 820px) {
@@ -309,9 +310,6 @@ const current = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$
       display: block;
       padding: 12px 8px;
       font-size: 1rem;
-    }
-    .ket {
-      opacity: 1;
     }
     :global(body.menu-open) .links {
       transform: none;

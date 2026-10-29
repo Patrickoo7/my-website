@@ -22,6 +22,7 @@ npm run build     # static output in dist/
 | Publications | `src/content/publications/*.md` |
 | Experience timeline | `src/content/experience/*.md` |
 | Resume / CV / photo | `public/resume.pdf`, `public/cv.pdf`, `public/profile.jpg` |
+| News list and "open to" line on the home page | `src/data/profile.ts` (`news`, `openTo`) |
 
 To add a project, copy an existing `.md` file in `src/content/projects/` and edit its front-matter.
 
@@ -32,11 +33,11 @@ One-time setup: **Settings → Pages → Source: GitHub Actions**.
 
 If you rename the repo to `patrickoo7.github.io`, remove `base` from `astro.config.mjs`.
 
-## Quantum touches
+## Visual elements
 
-- `QubitCanvas`: drifting qubits with entanglement lines, reacting to the cursor
-- `BlochSphere`: a precessing qubit you can click to measure (Born-rule collapse)
-- `CircuitDivider`: section dividers drawn as quantum circuits that light up on scroll
-- Bra-ket nav and labels, and a "superposition" hover on project cards
+- `QubitCanvas`: animated particle background in the home page hero
+- `BlochSphere`: interactive Bloch sphere on the About page
+- `CircuitDivider`: section dividers drawn as quantum circuits
+- `/qec`: interactive note on surface code decoding (logic in `src/scripts/surfaceCode.ts`), linked from the Research page
 
 All animations pause off-screen and respect `prefers-reduced-motion`.

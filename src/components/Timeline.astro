@@ -18,7 +18,7 @@ const { items } = Astro.props;
         <span class="node" aria-hidden="true" />
         <div class="meta mono">
           <span>{it.start === it.end ? it.start : `${it.start} → ${it.end}`}</span>
-          <span class="kind">|{it.kind}⟩</span>
+          <span class="kind">{it.kind}</span>
         </div>
         <h3>{it.role}</h3>
         <p class="org">{it.org}</p>
@@ -59,7 +59,7 @@ const { items } = Astro.props;
   }
   li[data-kind='research'] .node { border-color: var(--accent-2); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-2) 18%, transparent); }
   .meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; color: var(--text-dim); }
-  .kind { color: var(--accent-2); }
+  .kind { color: var(--accent-2); font-family: var(--font-sans); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.72rem; }
   h3 { margin: 4px 0 0; }
   .org { color: var(--accent); margin: 0 0 8px; font-weight: 500; }
   .body { color: var(--text-dim); font-size: 0.95rem; }

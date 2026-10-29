@@ -8,16 +8,18 @@ import { url } from '../data/url';
 ---
 
 <BaseLayout
-  title="Surface Code Playground"
-  description="Interactive surface code demo: inject errors, read the syndrome, decode, and watch a live threshold simulation, all in the browser."
+  title="Decoding the Surface Code"
+  description="Interactive note on surface code decoding: syndrome extraction, minimum-weight decoding, and logical error rates for d = 3 and d = 5 rotated surface codes."
 >
   <section class="container page-head">
-    <p class="prompt">python -m qec.playground</p>
-    <h1>Surface Code <span class="grad-text">Playground</span></h1>
+    <p class="eyebrow">Interactive note</p>
+    <h1>Decoding the surface code</h1>
     <p class="lead">
-      Qubits are fragile, so quantum computers protect information by spreading one <em>logical</em> qubit across many
-      physical ones. The surface code is the leading way to do this. This page lets you break it and watch it repair itself.
+      The surface code encodes one logical qubit in a lattice of physical qubits and detects errors through repeated
+      parity checks. This note shows syndrome extraction and minimum-weight decoding on d = 3 and d = 5 rotated surface
+      codes, computed in the browser.
     </p>
+    <p class="back"><a href={url('/research')}>← Research</a></p>
   </section>
 
   <section class="container play">
@@ -25,29 +27,29 @@ import { url } from '../data/url';
       <SurfaceCodeLattice />
     </div>
     <aside class="how reveal">
-      <h2>How to play</h2>
+      <h2>Using the demo</h2>
       <ol>
         <li>
-          <strong>Inject an error.</strong> Pick X (bit flip), Z (phase flip) or Y (both) and click a data qubit.
+          <strong>Apply errors.</strong> Choose X (bit flip), Z (phase flip) or Y (both), then select a data qubit.
         </li>
         <li>
-          <strong>Read the syndrome.</strong> Neighbouring checks light up. You only see the checks, never the qubits, just
-          like real hardware.
+          <strong>Read the syndrome.</strong> Checks adjacent to an error report odd parity. As on hardware, the decoder
+          sees only the checks, not the data qubits.
         </li>
         <li>
-          <strong>Decode.</strong> The decoder picks the smallest error consistent with the syndrome and proposes a
-          correction (dashed rings).
+          <strong>Decode.</strong> The decoder returns the lowest-weight error consistent with the syndrome; the proposed
+          correction is shown with dashed rings.
         </li>
         <li>
-          <strong>Try to beat it.</strong> On d = 3, any single error is corrected. Now put two X errors in the same
-          column (or two Z errors in the same row). The decoder blames a single qubit instead, and the "correction"
-          completes a <em>logical error</em>. Half of all two-qubit X errors fool it this way.
+          <strong>Logical failure.</strong> A d = 3 code corrects any single error. Two X errors in the same column (or two
+          Z errors in the same row) produce a syndrome that a single error also explains, so the correction completes a
+          logical operator. 18 of the 36 two-qubit X errors fail in this way.
         </li>
       </ol>
       <p class="note">
-        Under the hood: a rotated surface code with X and Z checks decoded independently. The decoder is an exact
-        minimum-weight lookup table built by breadth-first search over syndromes. That works for codes this small; larger
-        codes need matching (e.g. PyMatching) or learned decoders.
+        Implementation: X and Z errors are decoded independently with an exact minimum-weight lookup table, built by
+        breadth-first search over syndromes. This is tractable only for small codes; larger codes require matching
+        decoders (e.g. PyMatching) or learned decoders.
       </p>
     </aside>
   </section>
@@ -55,39 +57,34 @@ import { url } from '../data/url';
   <CircuitDivider />
 
   <section class="section container">
-    <p class="prompt">./threshold --noise bitflip --d 3 5</p>
-    <h2>Does adding qubits help?</h2>
+    <h2>Threshold behaviour</h2>
     <p class="lead">
-      Only if the hardware is good enough. Below a <strong>threshold</strong> error rate, a bigger code suppresses errors
-      faster. Above it, more qubits just means more things to go wrong.
+      Below the <strong>threshold</strong> error rate, increasing the code distance suppresses logical errors; above it,
+      larger codes perform worse.
     </p>
     <div class="card reveal chart-card">
       <ThresholdChart />
     </div>
     <p class="caveat">
-      Model: code capacity with independent bit flips and perfect syndrome measurement. That is the simplest setting, so
-      these numbers are optimistic. With noisy measurements and circuit-level noise, thresholds drop to about 1%, which is
-      why fast, accurate decoders matter so much.
+      Noise model: code capacity with independent bit flips and perfect syndrome measurement. This is the most favourable
+      setting, so the crossing point is optimistic; with measurement errors and circuit-level noise, thresholds fall to
+      roughly 1%.
     </p>
   </section>
 
   <section class="section container why">
     <div class="reveal">
-      <p class="prompt">cat motivation.md</p>
-      <h2>Why I built this</h2>
+      <h2>Relation to my research</h2>
       <p class="lead">
-        My research goal is <strong>machine-learning decoders that are accurate and fast enough for real-time error
-        correction</strong>. A decoder has to turn a stream of syndromes into corrections faster than errors pile up.
-        This playground is the smallest version of that problem.
-      </p>
-      <p class="lead">
-        Next steps: circuit-level noise with <a href="https://github.com/quantumlib/Stim" target="_blank" rel="noopener">Stim</a>,
-        matching baselines with <a href="https://github.com/oscarhiggott/PyMatching" target="_blank" rel="noopener">PyMatching</a>,
-        and comparing them against neural decoders trained on simulated syndromes.
+        My research interest is <strong>machine-learning decoders that are accurate and fast enough for real-time error
+        correction</strong>. This note covers the simplest version of that problem. Natural extensions are circuit-level
+        noise with <a href="https://github.com/quantumlib/Stim" target="_blank" rel="noopener">Stim</a>, matching
+        baselines with <a href="https://github.com/oscarhiggott/PyMatching" target="_blank" rel="noopener">PyMatching</a>,
+        and comparison against neural decoders trained on simulated syndromes.
       </p>
       <div class="cta">
-        <a class="btn btn-primary" href={url('/research')}>My research →</a>
-        <a class="btn" href={`${profile.links.github}/my-website/blob/main/src/scripts/surfaceCode.ts`} target="_blank" rel="noopener">View the code ↗</a>
+        <a class="btn btn-primary" href={url('/research')}>Research & publications →</a>
+        <a class="btn" href={`${profile.links.github}/my-website/blob/main/src/scripts/surfaceCode.ts`} target="_blank" rel="noopener">Source code ↗</a>
       </div>
     </div>
   </section>
@@ -102,6 +99,7 @@ import { url } from '../data/url';
     padding-bottom: 48px;
   }
   .lab { padding: 24px 16px; }
+  .back { margin: 0; font-size: 0.92rem; }
   .how h2 { font-size: 1.5rem; }
   .how ol { padding-left: 1.2em; color: var(--text-dim); display: grid; gap: 12px; margin: 0 0 20px; }
   .how strong, .lead strong { color: var(--text); }

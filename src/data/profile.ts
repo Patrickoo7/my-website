@@ -1,9 +1,9 @@
 // Edit this file to update your name, links and bio across the whole site.
 export const profile = {
   name: 'Prateek Awate',
-  shortName: 'PA',
-  role: 'AI Engineer & Quantum Computing Researcher',
-  tagline: 'Machine-learning decoders for quantum error correction, built by an engineer who ships production AI.',
+  role: 'AI/ML Engineer',
+  tagline: 'Published research in quantum optimization; now working toward machine-learning decoders for quantum error correction.',
+  openTo: 'Open to PhD positions in quantum computing, research collaborations, and AI/ML engineering roles.',
   location: 'Pune, India',
   email: 'awateprateek@gmail.com',
   bio: [
@@ -13,10 +13,10 @@ export const profile = {
   ],
   // Words cycled by the typing effect on the home page.
   typing: [
-    'ML decoders for quantum error correction',
-    'QUBO & quantum annealing',
-    'data-efficient learning',
     'production AI systems',
+    'quantum optimization (QUBO, annealing)',
+    'data-efficient learning',
+    'ML decoders for quantum error correction',
   ],
   interests: [
     { title: 'Quantum error correction', text: 'Machine-learning decoders that are accurate and fast enough for real-time use.', primary: true },
@@ -56,6 +56,13 @@ export const profile = {
     'NVIDIA: Rapid Application Development using Large Language Models',
   ],
   languages: 'English (fluent) · Hindi (native) · Marathi (native) · Japanese (conversational)',
+  // Shown on the home page, newest first. Keep it to 4–6 items.
+  news: [
+    { date: 'Sep 2026', text: 'Two papers published in the CLEF 2026 Working Notes (CEUR-WS), Jena, Germany.' },
+    { date: '2026', text: 'Ranked 1st among pure quantum-annealing submissions (4th overall) in QuantumCLEF 2026, Task 2.' },
+    { date: '2026', text: 'Our team ranked 1st overall in CLEF 2026 JOKER Task 2 (English→French pun translation).' },
+    { date: 'Spring 2026', text: 'Graduate research (CS6999) at Georgia Tech with Prof. Steve Mussmann on training-batch selection.' },
+  ],
   links: {
     github: 'https://github.com/Patrickoo7',
     linkedin: 'https://www.linkedin.com/in/awateprateek/',

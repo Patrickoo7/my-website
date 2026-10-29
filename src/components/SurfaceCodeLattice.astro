@@ -23,11 +23,11 @@
 
   <div class="actions">
     <button type="button" class="btn btn-primary" data-action="decode">Decode ⟶</button>
-    <button type="button" class="btn" data-action="random">Random noise (p = 10%)</button>
+    <button type="button" class="btn" data-action="random">Random errors (p = 10%)</button>
     <button type="button" class="btn" data-action="clear">Clear</button>
   </div>
 
-  <p class="result" role="status" aria-live="polite">Click a data qubit (circle) to inject an error.</p>
+  <p class="result" role="status" aria-live="polite">Select a data qubit to apply an error.</p>
 
   <dl class="readout mono">
     <div><dt>error weight</dt><dd data-out="weight">0</dd></div>
@@ -385,8 +385,8 @@
 
       if (!decoded) {
         result.innerHTML = weight
-          ? `Lit checks are the <strong>syndrome</strong>: all a real device gets to see. Press <strong>Decode</strong> to infer the error.`
-          : `Click a data qubit (circle) to inject an error. A d = ${code.d} code corrects any ${(code.d - 1) / 2} error${code.d > 3 ? 's' : ''}.`;
+          ? `Highlighted checks form the <strong>syndrome</strong>, the only information available to the decoder. Select <strong>Decode</strong> to infer a correction.`
+          : `Select a data qubit to apply an error. A d = ${code.d} code corrects any ${code.d > 3 ? 'two errors' : 'single error'}.`;
         return;
       }
 
@@ -400,15 +400,15 @@
         t.textContent = fx && fz ? 'Y' : fx ? 'X' : 'Z';
       }
       if (!weight) {
-        result.textContent = 'No errors, nothing to correct.';
+        result.textContent = 'No errors to correct.';
       } else if (!r.logicalXError && !r.logicalZError) {
         const exact = r.xCorrection === xErr && r.zCorrection === zErr;
         result.innerHTML = `<span class="ok">✓ Corrected.</span> ${
-          exact ? 'The decoder found exactly the error that happened.' : 'The correction differs from the error, but only by a stabilizer, so the logical qubit is untouched.'
+          exact ? 'The correction matches the applied error.' : 'The correction differs from the applied error by a stabilizer, so the logical state is unchanged.'
         }`;
       } else {
         const which = [r.logicalXError && 'X', r.logicalZError && 'Z'].filter(Boolean).join(' and ');
-        result.innerHTML = `<span class="fail">✗ Logical ${which} error.</span> The most likely explanation of the syndrome was wrong: error + correction form a logical operator, which flips the encoded qubit.`;
+        result.innerHTML = `<span class="fail">✗ Logical ${which} error.</span> The minimum-weight explanation of the syndrome differs from the applied error by a logical operator, so the encoded state is flipped.`;
       }
     }
 

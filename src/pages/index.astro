@@ -5,11 +5,12 @@ import QubitCanvas from '../components/QubitCanvas.astro';
 import TypingText from '../components/TypingText.astro';
 import CircuitDivider from '../components/CircuitDivider.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import BlochSphere from '../components/BlochSphere.astro';
 import { profile } from '../data/profile';
 import { url } from '../data/url';
 
 const featured = (await getCollection('projects', (p) => p.data.featured)).sort((a, b) => a.data.order - b.data.order);
+const pubs = (await getCollection('publications')).sort((a, b) => b.data.year - a.data.year || a.data.order - b.data.order);
+const boldName = (authors: string) => authors.replace(profile.name, `<strong>${profile.name}</strong>`);
 ---
 
 <BaseLayout>
@@ -17,32 +18,32 @@ const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
     <QubitCanvas />
     <div class="container hero-inner">
       <div class="hero-text">
-        <p class="prompt">whoami</p>
-        <h1>
-          Hi, I'm <span class="grad-text">{profile.name}</span>
-        </h1>
-        <p class="ket-eq mono" aria-label="Quantum state: me equals a superposition of research and engineering">
-          |me⟩ = <span class="a">α</span>|research⟩ + <span class="b">β</span>|engineering⟩
-        </p>
+        <h1 class="grad-text">{profile.name}</h1>
+        <p class="role">{profile.role}</p>
         <p class="lead">{profile.tagline}</p>
-        <p class="working mono">
-          <span class="dim">currently working on</span><br />
+        <p class="focus">
+          <span class="dim">Interests:</span>
           <TypingText words={profile.typing} />
         </p>
         <div class="cta">
-          <a class="btn btn-primary" href={url('/research')}>For Academia → Research & CV</a>
-          <a class="btn" href={url('/projects')}>For Recruiters → Projects & Resume</a>
+          <a class="btn btn-primary" href={url('/research')}>Research & publications</a>
+          <a class="btn" href={url('/cv')}>CV & resume</a>
         </div>
+        <p class="links">
+          <a href={`mailto:${profile.email}`}>Email</a>
+          <a href={profile.links.github} target="_blank" rel="noopener">GitHub</a>
+          <a href={profile.links.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+          <a href={profile.links.orcid} target="_blank" rel="noopener">ORCID</a>
+        </p>
       </div>
       <div class="hero-photo">
         <div class="orbit" aria-hidden="true"><span></span><span></span></div>
         <img src={url('/profile.jpg')} alt={`Portrait of ${profile.name}`} width="800" height="800" />
       </div>
     </div>
-    <a class="scroll-hint mono" href="#about" aria-label="Scroll to content">↓ measure</a>
   </section>
 
-  <section class="stats container" id="about">
+  <section class="stats container" aria-label="Highlights">
     {
       profile.stats.map((s) => (
         <div class="stat reveal">
@@ -53,26 +54,54 @@ const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
     }
   </section>
 
+  <p class="container open reveal">{profile.openTo}</p>
+
   <CircuitDivider />
 
-  <section class="section container about-grid">
+  <section class="section container record">
     <div class="reveal">
-      <p class="prompt">cat about.md</p>
-      <h2>Engineer by trade, quantum by curiosity</h2>
-      {profile.bio.map((p) => <p class="lead">{p}</p>)}
-      <a class="btn" href={url('/about')}>More about me →</a>
+      <h2>Selected publications</h2>
+      <ol class="pubs">
+        {
+          pubs.map((p) => (
+            <li>
+              <h3>{p.data.url ? <a href={p.data.url} target="_blank" rel="noopener">{p.data.title}</a> : p.data.title}</h3>
+              <p class="authors" set:html={boldName(p.data.authors)} />
+              <p class="venue">
+                {p.data.venue}, {p.data.year}
+                {p.data.note && <span class="note"> · {p.data.note}</span>}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+      <a class="text-link" href={url('/research')}>All research →</a>
     </div>
-    <div class="reveal bloch-wrap">
-      <BlochSphere />
-      <p class="hint mono">Click the sphere to measure the qubit</p>
-    </div>
+    <aside class="reveal news" aria-labelledby="news-h">
+      <h2 id="news-h">News</h2>
+      <ul>
+        {
+          profile.news.map((n) => (
+            <li>
+              <span class="date">{n.date}</span>
+              <span>{n.text}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
   </section>
 
   <CircuitDivider />
 
+  <section class="section container about reveal">
+    <h2>About</h2>
+    {profile.bio.map((p) => <p class="lead">{p}</p>)}
+    <a class="text-link" href={url('/about')}>Education, skills and certifications →</a>
+  </section>
+
   <section class="section container">
     <div class="reveal">
-      <p class="prompt">ls projects/ --featured</p>
       <h2>Selected work</h2>
     </div>
     <div class="grid">
@@ -84,16 +113,16 @@ const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
   <section class="section container">
     <div class="audiences">
       <a class="card audience reveal" href={url('/research')}>
-        <span class="mono ket">|academia⟩</span>
+        <span class="eyebrow">For academia</span>
         <h3>Research & publications</h3>
-        <p>My interests in quantum error correction, CLEF 2026 papers, and research experience at Georgia Tech.</p>
-        <span class="mono go">open research.md →</span>
+        <p>Research interests in quantum error correction, the CLEF 2026 papers, and research experience at Georgia Tech.</p>
+        <span class="go">View research →</span>
       </a>
       <a class="card audience reveal" href={url('/cv')}>
-        <span class="mono ket">|industry⟩</span>
+        <span class="eyebrow">For industry</span>
         <h3>Resume & experience</h3>
         <p>4.5+ years building production computer-vision and LLM systems, from edge devices to cloud microservices.</p>
-        <span class="mono go">open resume.pdf →</span>
+        <span class="go">View resume →</span>
       </a>
     </div>
   </section>
@@ -102,7 +131,7 @@ const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
 <style>
   .hero {
     position: relative;
-    min-height: 100svh;
+    min-height: 92svh;
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -124,16 +153,21 @@ const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
     gap: 48px;
     align-items: center;
   }
-  .ket-eq {
-    font-size: clamp(0.95rem, 2.2vw, 1.2rem);
-    color: var(--text-dim);
-    margin-bottom: 1.2em;
+  h1 {
+    margin-bottom: 0.2em;
+    padding-bottom: 0.05em;
   }
-  .ket-eq .a { color: var(--accent-2); }
-  .ket-eq .b { color: var(--accent); }
-  .working {
-    font-size: 0.95rem;
-    min-height: 3.4em;
+  .role {
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    font-weight: 600;
+    margin-bottom: 0.8em;
+  }
+  .focus {
+    font-size: 0.98rem;
+    min-height: 3em;
+  }
+  .focus :global(.typing) {
+    font-size: 0.92rem;
   }
   .dim { color: var(--text-dim); }
   .cta {
@@ -141,6 +175,13 @@ const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
     flex-wrap: wrap;
     gap: 12px;
     margin-top: 8px;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    margin-top: 22px;
+    font-size: 0.92rem;
   }
 
   .hero-photo {
@@ -167,14 +208,6 @@ const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
     border: 1px dashed color-mix(in srgb, var(--accent-2) 50%, transparent);
     animation: spin 18s linear infinite;
   }
-  .orbit::before {
-    content: '';
-    position: absolute;
-    inset: 6%;
-    border-radius: 50%;
-    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
-    transform: rotateX(70deg);
-  }
   .orbit span {
     position: absolute;
     width: 12px;
@@ -193,24 +226,12 @@ const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .scroll-hint {
-    position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    animation: bob 2.4s ease-in-out infinite;
-  }
-  @keyframes bob { 50% { transform: translate(-50%, 6px); } }
-
   .stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     padding-top: 24px;
-    padding-bottom: 48px;
+    padding-bottom: 20px;
   }
   .stat {
     display: flex;
@@ -221,15 +242,50 @@ const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
   }
   .value { font-size: 2.2rem; font-weight: 800; line-height: 1; }
   .label { font-size: 0.88rem; color: var(--text-dim); }
-
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 48px;
-    align-items: center;
+  .open {
+    color: var(--text-dim);
+    font-size: 0.98rem;
+    padding-bottom: 40px;
   }
-  .bloch-wrap { text-align: center; }
-  .hint { font-size: 0.78rem; color: var(--text-dim); margin-top: 10px; }
+
+  .record {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .pubs {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+    display: grid;
+    gap: 22px;
+  }
+  .pubs h3 { font-size: 1.02rem; line-height: 1.45; margin-bottom: 4px; }
+  .pubs h3 a { color: var(--text); }
+  .pubs h3 a:hover { color: var(--accent); }
+  .authors { color: var(--text-dim); font-size: 0.92rem; margin: 0 0 2px; }
+  .authors :global(strong) { color: var(--text); font-weight: 600; }
+  .venue { font-size: 0.88rem; color: var(--accent); margin: 0; }
+  .note { color: var(--text-dim); }
+  .news ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
+  .news li {
+    display: grid;
+    gap: 2px;
+    padding-left: 14px;
+    border-left: 2px solid var(--border);
+    font-size: 0.94rem;
+  }
+  .date {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+  }
+  .text-link { font-weight: 500; font-size: 0.95rem; }
+
+  .about .lead { max-width: 72ch; }
 
   .more { margin-top: 28px; text-align: center; }
 
@@ -245,15 +301,16 @@ const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
   }
   .audience:hover { text-decoration: none; transform: translateY(-4px); border-color: var(--accent); }
   .audience p { color: var(--text-dim); }
-  .audience .ket { color: var(--accent-2); font-size: 0.85rem; }
-  .audience h3 { font-size: 1.5rem; margin-top: 8px; }
-  .go { color: var(--accent); font-size: 0.85rem; }
+  .audience .eyebrow { display: block; margin-bottom: 0.4em; }
+  .audience h3 { font-size: 1.5rem; }
+  .go { color: var(--accent); font-size: 0.92rem; font-weight: 500; }
 
   @media (max-width: 860px) {
-    .hero-inner, .about-grid, .audiences { grid-template-columns: 1fr; }
+    .hero-inner, .record, .audiences { grid-template-columns: 1fr; }
     .hero-photo { order: -1; width: min(70%, 260px); }
-    .hero { padding-top: 90px; }
+    .hero { padding-top: 90px; min-height: auto; }
     .stats { grid-template-columns: repeat(2, 1fr); }
+    .record { gap: 40px; }
   }
   @media (max-width: 420px) {
     .cta .btn { width: 100%; justify-content: center; }
