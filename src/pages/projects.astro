@@ -10,11 +10,11 @@ const filters = ['all', 'research', 'engineering'];
 
 <BaseLayout title="Projects" description={`Projects by ${profile.name}: quantum annealing, LLM systems, computer vision and edge AI.`}>
   <section class="container page-head">
-    <p class="prompt">ls -la projects/</p>
+    <p class="eyebrow">Selected work</p>
     <h1>Projects</h1>
     <p class="lead">Research on quantum optimization and data-efficient learning, plus production AI systems I've designed and shipped.</p>
-    <div class="filters mono" role="group" aria-label="Filter projects">
-      {filters.map((f, i) => <button type="button" data-filter={f} aria-pressed={i === 0 ? 'true' : 'false'}>|{f}⟩</button>)}
+    <div class="filters" role="group" aria-label="Filter projects">
+      {filters.map((f, i) => <button type="button" data-filter={f} aria-pressed={i === 0 ? 'true' : 'false'}>{f[0].toUpperCase() + f.slice(1)}</button>)}
     </div>
   </section>
 

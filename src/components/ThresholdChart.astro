@@ -206,7 +206,7 @@
         if (c) {
           el('line', { x1: sx(c), x2: sx(c), y1: M.t, y2: H - M.b, class: 'cross' }, layer);
           el('text', { x: sx(c) - 8, y: M.t + 14, 'text-anchor': 'end', class: 'cross-label' }, layer).textContent = `curves cross ≈ ${pct(c)}`;
-          status.textContent = `Done. Below p ≈ ${pct(c)} the bigger code wins and adding qubits helps; above it, adding qubits makes things worse.`;
+          status.textContent = `Below p ≈ ${pct(c)}, the d = 5 code has a lower logical error rate than d = 3; above it, the larger code performs worse.`;
         } else {
           status.textContent = 'Done.';
         }

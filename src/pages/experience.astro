@@ -11,7 +11,7 @@ const items = entries.map((e) => ({ ...e.data, html: e.rendered?.html ?? '' }));
 
 <BaseLayout title="Experience" description={`Research and industry experience of ${profile.name}.`}>
   <section class="container page-head">
-    <p class="prompt">git log --career</p>
+    <p class="eyebrow">Career</p>
     <h1>Experience</h1>
     <p class="lead">Research at Georgia Tech alongside 4.5+ years in industry, from enterprise data pipelines to production LLM platforms and edge vision.</p>
     <a class="btn" href={url('/cv')}>Resume & CV →</a>

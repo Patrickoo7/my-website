@@ -12,21 +12,19 @@ const research = (await getCollection('projects', (p) => p.data.category === 're
 
 <BaseLayout title="Research" description={`Research interests and publications of ${profile.name}: quantum error correction, quantum optimization, data-efficient learning.`}>
   <section class="container page-head">
-    <p class="prompt">cat research.md</p>
+    <p class="eyebrow">Academic profile</p>
     <h1>Research</h1>
     <p class="lead">
       I want to build <strong>machine-learning decoders for quantum error correction</strong> that are accurate and fast enough for
-      real-time use. My path here runs through quantum optimization on real annealing hardware and data-efficient learning.
+      real-time use. My published work so far is in quantum optimization on annealing hardware and in data-efficient learning.
     </p>
     <div class="cta">
       <a class="btn btn-primary" href={url('/cv.pdf')} target="_blank" rel="noopener">Research CV (PDF) ↗</a>
-      <a class="btn" href={url('/qec')}>Try the surface code playground →</a>
       <a class="btn" href={profile.links.orcid} target="_blank" rel="noopener">ORCID ↗</a>
     </div>
   </section>
 
   <section class="section container">
-    <p class="prompt">grep -i interests</p>
     <h2>Interests</h2>
     <div class="grid">
       {
@@ -44,7 +42,6 @@ const research = (await getCollection('projects', (p) => p.data.category === 're
   <CircuitDivider />
 
   <section class="section container">
-    <p class="prompt">cat publications.bib</p>
     <h2>Publications</h2>
     <ol class="pubs">
       {
@@ -55,7 +52,7 @@ const research = (await getCollection('projects', (p) => p.data.category === 're
               <h3>{p.data.url ? <a href={p.data.url} target="_blank" rel="noopener">{p.data.title}</a> : p.data.title}</h3>
               <p class="authors" set:html={p.data.authors.replace(profile.name, `<strong>${profile.name}</strong>`)} />
               <p class="venue mono">{p.data.venue}, {p.data.year}</p>
-              {p.data.note && <p class="note">★ {p.data.note}</p>}
+              {p.data.note && <p class="note">{p.data.note}</p>}
             </div>
           </li>
         ))
@@ -64,9 +61,21 @@ const research = (await getCollection('projects', (p) => p.data.category === 're
   </section>
 
   <section class="section container">
-    <p class="prompt">ls research/</p>
     <h2>Research projects</h2>
     <div class="grid">{research.map((p) => <ProjectCard {...p.data} />)}</div>
+  </section>
+
+  <section class="section container">
+    <h2>Notes & explainers</h2>
+    <a class="card note-card reveal" href={url('/qec')}>
+      <span class="eyebrow">Interactive note</span>
+      <h3>Decoding the surface code</h3>
+      <p>
+        A browser-based explanation of syndrome extraction and minimum-weight decoding on d = 3 and d = 5 rotated surface
+        codes, with a Monte Carlo comparison of logical error rates under bit-flip noise.
+      </p>
+      <span class="go">Open note →</span>
+    </a>
   </section>
 </BaseLayout>
 
@@ -86,4 +95,9 @@ const research = (await getCollection('projects', (p) => p.data.category === 're
   .authors :global(strong) { color: var(--text); }
   .venue { font-size: 0.82rem; color: var(--accent); margin: 0; }
   .note { font-size: 0.88rem; color: var(--text-dim); margin: 4px 0 0; }
+  .note-card { display: block; max-width: 720px; color: var(--text); transition: border-color 0.3s, transform 0.3s; }
+  .note-card:hover { text-decoration: none; border-color: var(--accent); transform: translateY(-3px); }
+  .note-card .eyebrow { display: block; margin-bottom: 0.4em; }
+  .note-card p { color: var(--text-dim); font-size: 0.95rem; }
+  .go { color: var(--accent); font-size: 0.92rem; font-weight: 500; }
 </style>

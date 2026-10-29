@@ -17,11 +17,11 @@ const href = internal ? url(link!) : link;
 
 <article class="card project reveal" data-category={category} data-tags={tags.join('|')}>
   <div class="top mono">
-    <span class="ket">|{category ?? 'project'}⟩</span>
+    <span class="kind">{category ?? 'project'}</span>
     <span class="year">{year}</span>
   </div>
-  <h3 data-title={title}>{title}</h3>
-  {highlight && <p class="highlight mono">★ {highlight}</p>}
+  <h3>{title}</h3>
+  {highlight && <p class="highlight">{highlight}</p>}
   <p class="summary">{summary}</p>
   <div class="tags">{tags.map((t) => <span class="tag">{t}</span>)}</div>
   {
@@ -66,24 +66,9 @@ const href = internal ? url(link!) : link;
     font-size: 0.8rem;
     color: var(--text-dim);
   }
-  .ket { color: var(--accent-2); }
-  h3 { margin: 0; position: relative; }
-  /* superposition: a ghost copy of the title splits off then collapses back */
-  h3::after {
-    content: attr(data-title);
-    position: absolute;
-    inset: 0;
-    color: var(--accent);
-    opacity: 0;
-    pointer-events: none;
-  }
-  .project:hover h3::after { animation: superpose 0.6s ease; }
-  @keyframes superpose {
-    0% { opacity: 0; transform: none; filter: blur(0); }
-    35% { opacity: 0.6; transform: translate(5px, -2px); filter: blur(1.5px); }
-    100% { opacity: 0; transform: none; filter: blur(0); }
-  }
-  .highlight { margin: 0; font-size: 0.82rem; color: var(--accent); }
+  .kind { color: var(--accent-2); font-family: var(--font-sans); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.72rem; }
+  h3 { margin: 0; }
+  .highlight { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--accent); }
   .summary { color: var(--text-dim); font-size: 0.95rem; margin: 0; flex: 1; }
   .links { display: flex; gap: 16px; font-size: 0.85rem; }
 </style>

@@ -150,18 +150,14 @@ code,
   color: transparent;
 }
 
-/* terminal-style section label: $ cat research.md */
-.prompt {
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  color: var(--text-dim);
-  margin-bottom: 0.75rem;
-  display: inline-flex;
-  gap: 0.5ch;
-}
-.prompt::before {
-  content: '$';
+/* small section label above headings */
+.eyebrow {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--accent);
+  margin-bottom: 0.75rem;
 }
 
 .lead {
