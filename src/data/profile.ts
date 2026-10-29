@@ -58,7 +58,7 @@ export const profile = {
   languages: 'English (fluent) · Hindi (native) · Marathi (native) · Japanese (conversational)',
   // Shown on the home page, newest first. Keep it to 4–6 items.
   news: [
-    { date: 'Sep 2026', text: 'Two papers published in the CLEF 2026 Working Notes (CEUR-WS), Jena, Germany.' },
+    { date: 'Sep 2026', text: 'Two papers published in the CLEF 2026 Working Notes (CEUR-WS Vol. 4283), Jena, Germany.' },
     { date: '2026', text: 'Ranked 1st among pure quantum-annealing submissions (4th overall) in QuantumCLEF 2026, Task 2.' },
     { date: '2026', text: 'Our team ranked 1st overall in CLEF 2026 JOKER Task 2 (English→French pun translation).' },
     { date: 'Spring 2026', text: 'Graduate research (CS6999) at Georgia Tech with Prof. Steve Mussmann on training-batch selection.' },
