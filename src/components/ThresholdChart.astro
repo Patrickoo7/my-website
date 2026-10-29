@@ -116,7 +116,15 @@
   const NS = 'http://www.w3.org/2000/svg';
   const PS = [0.01, 0.015, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.12, 0.14, 0.17, 0.2];
   const trialsFor = (p: number) => (p <= 0.03 ? 200_000 : p <= 0.06 ? 80_000 : 40_000);
-  const W = 720, H = 420, M = { l: 64, r: 64, t: 16, b: 52 };
+  // Chart units track the rendered width (capped at 720) so text stays legible on phones.
+  let W = 720, H = 420;
+  const M = { l: 64, r: 64, t: 16, b: 52 };
+  function fit(width: number) {
+    W = Math.round(Math.min(720, Math.max(320, width || 720)));
+    H = W < 520 ? 320 : 420;
+    M.l = W < 520 ? 52 : 64;
+    M.r = W < 520 ? 44 : 64;
+  }
   const X0 = 0.01, X1 = 0.2, Y0 = 1e-4, Y1 = 0.5;
   const sx = (p: number) => M.l + ((Math.log10(p) - Math.log10(X0)) / (Math.log10(X1) - Math.log10(X0))) * (W - M.l - M.r);
   const sy = (v: number) => M.t + (1 - (Math.log10(Math.max(v, Y0)) - Math.log10(Y0)) / (Math.log10(Y1) - Math.log10(Y0))) * (H - M.t - M.b);
@@ -139,12 +147,13 @@
     const rerun = fig.querySelector<HTMLButtonElement>('.rerun')!;
     const tbody = fig.querySelector('tbody')!;
     const codes = { 3: buildCode(3), 5: buildCode(5) };
-    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
     let data: Pt[] = [];
     let layer: SVGGElement;
 
     function axes() {
+      fit(svg.clientWidth);
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
       svg.replaceChildren();
       const g = el('g', {}, svg);
       for (let e = -4; e <= 0; e++) {
@@ -253,6 +262,15 @@
       tip.hidden = true;
       hair()?.remove();
     });
+
+    let lastW = 0;
+    new ResizeObserver(() => {
+      const w = svg.clientWidth;
+      if (!data.length || Math.abs(w - lastW) < 40) return;
+      lastW = w;
+      axes();
+      render();
+    }).observe(svg);
 
     rerun.addEventListener('click', run);
     // start once the chart scrolls near the viewport
