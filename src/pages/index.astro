@@ -2,7 +2,6 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import QubitCanvas from '../components/QubitCanvas.astro';
-import TypingText from '../components/TypingText.astro';
 import CircuitDivider from '../components/CircuitDivider.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { profile } from '../data/profile';
@@ -23,7 +22,7 @@ const boldName = (authors: string) => authors.replace(profile.name, `<strong>${p
         <p class="lead">{profile.tagline}</p>
         <p class="focus">
           <span class="dim">Interests:</span>
-          <TypingText words={profile.typing} />
+          <span class="areas">{profile.focusAreas.join(' · ')}</span>
         </p>
         <div class="cta">
           <a class="btn btn-primary" href={url('/research')}>Research & publications</a>
@@ -164,10 +163,11 @@ const boldName = (authors: string) => authors.replace(profile.name, `<strong>${p
   }
   .focus {
     font-size: 0.98rem;
-    min-height: 3em;
+    margin-bottom: 1.4em;
   }
-  .focus :global(.typing) {
-    font-size: 0.92rem;
+  .areas {
+    color: var(--accent);
+    font-weight: 500;
   }
   .dim { color: var(--text-dim); }
   .cta {

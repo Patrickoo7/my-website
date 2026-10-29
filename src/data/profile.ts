@@ -5,19 +5,15 @@ export const profile = {
   tagline: 'Published research in quantum optimization; now working toward machine-learning decoders for quantum error correction.',
   openTo: 'Open to PhD positions in quantum computing, research collaborations, and AI/ML engineering roles.',
   location: 'Pune, India',
+  employer: 'Stark Digital Media Services',
   email: 'awateprateek@gmail.com',
   bio: [
-    "I'm an AI engineer with 4.5+ years of experience shipping computer vision and LLM systems to production, from face recognition running on a Raspberry Pi to air-gapped Llama 3 deployments and microservices serving hundreds of users.",
+    "I'm an AI engineer, currently AI Tech Lead at Stark Digital Media Services in Pune, with 4.5+ years of experience shipping computer vision and LLM systems to production, from face recognition running on a Raspberry Pi to air-gapped Llama 3 deployments and microservices serving hundreds of users.",
     'My research is moving toward quantum computing. I want to work on quantum error correction, and in particular on machine-learning decoders that are accurate and fast enough for real-time use. At CLEF 2026 I formulated training-data selection as a QUBO and ran it on D-Wave quantum annealing hardware. That entry ranked 1st among pure quantum-annealing submissions.',
     "I'm currently doing an MS in Computer Science at Georgia Tech (OMSCS) and applying to PhD programs in quantum computing.",
   ],
-  // Words cycled by the typing effect on the home page.
-  typing: [
-    'production AI systems',
-    'quantum optimization (QUBO, annealing)',
-    'data-efficient learning',
-    'ML decoders for quantum error correction',
-  ],
+  // Shown as the "Interests" line in the home page hero.
+  focusAreas: ['Production AI systems', 'Quantum error correction', 'Quantum optimization', 'Data-efficient learning'],
   interests: [
     { title: 'Quantum error correction', text: 'Machine-learning decoders that are accurate and fast enough for real-time use.', primary: true },
     { title: 'Decoding as inference', text: 'Treating syndrome decoding as a statistical inference problem.' },
@@ -58,6 +54,7 @@ export const profile = {
   languages: 'English (fluent) · Hindi (native) · Marathi (native) · Japanese (conversational)',
   // Shown on the home page, newest first. Keep it to 4–6 items.
   news: [
+    { date: 'Oct 2026', text: 'Joined Stark Digital Media Services, Pune, as AI Tech Lead.' },
     { date: 'Sep 2026', text: 'Two papers published in the CLEF 2026 Working Notes (CEUR-WS Vol. 4283), Jena, Germany.' },
     { date: '2026', text: 'Ranked 1st among pure quantum-annealing submissions (4th overall) in QuantumCLEF 2026, Task 2.' },
     { date: '2026', text: 'Our team ranked 1st overall in CLEF 2026 JOKER Task 2 (English→French pun translation).' },

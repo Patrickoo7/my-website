@@ -18,6 +18,7 @@ const personLd = {
   '@type': 'Person',
   name: profile.name,
   jobTitle: profile.role,
+  worksFor: { '@type': 'Organization', name: profile.employer },
   description: profile.tagline,
   url: new URL(url('/'), Astro.site).href,
   image: new URL(url('/profile.jpg'), Astro.site).href,
