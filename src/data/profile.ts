@@ -1,8 +1,8 @@
 // Edit this file to update your name, links and bio across the whole site.
 export const profile = {
   name: 'Prateek Awate',
-  role: 'AI Engineer & Quantum Computing Researcher',
-  tagline: 'Production AI engineering and quantum computing research, focused on machine-learning decoders for quantum error correction.',
+  role: 'AI/ML Engineer',
+  tagline: 'Published research in quantum optimization; focused on machine-learning decoders for quantum error correction.',
   openTo: 'Open to PhD positions in quantum computing, research collaborations, and AI/ML engineering roles.',
   location: 'Pune, India',
   email: 'awateprateek@gmail.com',
@@ -13,10 +13,10 @@ export const profile = {
   ],
   // Words cycled by the typing effect on the home page.
   typing: [
-    'ML decoders for quantum error correction',
-    'QUBO & quantum annealing',
-    'data-efficient learning',
     'production AI systems',
+    'quantum optimization (QUBO, annealing)',
+    'data-efficient learning',
+    'ML decoders for quantum error correction',
   ],
   interests: [
     { title: 'Quantum error correction', text: 'Machine-learning decoders that are accurate and fast enough for real-time use.', primary: true },
