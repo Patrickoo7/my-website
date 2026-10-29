@@ -1,0 +1,446 @@
+---
+// Interactive rotated surface code: inject errors, watch syndromes, decode.
+---
+
+<div class="qec" data-qec>
+  <div class="toolbar" role="toolbar" aria-label="Surface code controls">
+    <div class="seg" role="group" aria-label="Code distance">
+      <span class="seg-label mono">distance</span>
+      <button type="button" data-distance="3" aria-pressed="true">d = 3</button>
+      <button type="button" data-distance="5" aria-pressed="false">d = 5</button>
+    </div>
+    <div class="seg" role="group" aria-label="Error type to inject">
+      <span class="seg-label mono">error</span>
+      <button type="button" data-tool="X" aria-pressed="true" title="Bit flip">X</button>
+      <button type="button" data-tool="Z" aria-pressed="false" title="Phase flip">Z</button>
+      <button type="button" data-tool="Y" aria-pressed="false" title="Both">Y</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <svg class="lattice" role="group" aria-label="Surface code lattice. Data qubits are buttons; press one to toggle an error on it."></svg>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn btn-primary" data-action="decode">Decode ⟶</button>
+    <button type="button" class="btn" data-action="random">Random noise (p = 10%)</button>
+    <button type="button" class="btn" data-action="clear">Clear</button>
+  </div>
+
+  <p class="result" role="status" aria-live="polite">Click a data qubit (circle) to inject an error.</p>
+
+  <dl class="readout mono">
+    <div><dt>error weight</dt><dd data-out="weight">0</dd></div>
+    <div><dt>Z-check syndrome</dt><dd data-out="zsyn">–</dd></div>
+    <div><dt>X-check syndrome</dt><dd data-out="xsyn">–</dd></div>
+  </dl>
+
+  <ul class="legend">
+    <li><span class="sw sw-x" aria-hidden="true"></span>X-check: flags Z errors</li>
+    <li><span class="sw sw-z" aria-hidden="true"></span>Z-check: flags X errors</li>
+    <li><span class="sw sw-err" aria-hidden="true">X</span>Error on a data qubit</li>
+    <li><span class="sw sw-fix" aria-hidden="true">X</span>Decoder's correction</li>
+  </ul>
+  <noscript><p class="result">This demo needs JavaScript.</p></noscript>
+</div>
+
+<style>
+  .qec {
+    display: grid;
+    gap: 16px;
+  }
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    justify-content: center;
+  }
+  .seg {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .seg-label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-right: 4px;
+  }
+  .seg button {
+    font: 600 0.88rem var(--font-mono);
+    min-width: 44px;
+    min-height: 36px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .seg button[aria-pressed='true'] {
+    background: var(--grad);
+    border-color: transparent;
+    color: #fff;
+  }
+  .stage {
+    display: grid;
+    place-items: center;
+  }
+  .lattice {
+    width: min(100%, 440px);
+    height: auto;
+    overflow: visible;
+    touch-action: manipulation;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .actions .btn {
+    cursor: pointer;
+  }
+  .result {
+    text-align: center;
+    margin: 0;
+    min-height: 3.2em;
+    color: var(--text-dim);
+  }
+  .result :global(strong) {
+    color: var(--text);
+  }
+  .result :global(.ok) {
+    color: var(--accent);
+  }
+  .result :global(.fail) {
+    color: var(--q-err);
+  }
+  .readout {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 28px;
+    margin: 0;
+    font-size: 0.82rem;
+  }
+  .readout div {
+    display: flex;
+    gap: 8px;
+  }
+  .readout dt {
+    color: var(--text-dim);
+  }
+  .readout dd {
+    margin: 0;
+    color: var(--text);
+  }
+  .legend {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 20px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sw {
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    font: 700 10px var(--font-mono);
+  }
+  .sw-x { background: color-mix(in srgb, var(--q-x) 45%, transparent); border: 1.5px solid var(--q-x); }
+  .sw-z { background: color-mix(in srgb, var(--q-z) 45%, transparent); border: 1.5px solid var(--q-z); }
+  .sw-err { border-radius: 50%; background: var(--q-err); color: #fff; }
+  .sw-fix { border-radius: 50%; border: 1.5px dashed var(--text); color: var(--text); }
+
+  /* ---- SVG pieces (created by the script) ---- */
+  .lattice :global(.face) {
+    stroke-width: 1.5;
+    transition: fill-opacity 0.25s, stroke-opacity 0.25s;
+    fill-opacity: 0.12;
+    stroke-opacity: 0.45;
+  }
+  .lattice :global(.face.X) { fill: var(--q-x); stroke: var(--q-x); }
+  .lattice :global(.face.Z) { fill: var(--q-z); stroke: var(--q-z); }
+  .lattice :global(.face.lit) {
+    fill-opacity: 0.75;
+    stroke-opacity: 1;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    50% { fill-opacity: 0.45; }
+  }
+  .lattice :global(.face-label) {
+    font: 600 13px var(--font-mono);
+    text-anchor: middle;
+    dominant-baseline: central;
+    fill: var(--text-dim);
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  .lattice :global(.face.lit + .face-label) {
+    fill: var(--text);
+    opacity: 1;
+  }
+  .lattice :global(.edge) {
+    stroke: var(--text-dim);
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .lattice :global(.qubit) {
+    cursor: pointer;
+    outline: none;
+  }
+  .lattice :global(.qubit .hit) {
+    fill: transparent;
+  }
+  .lattice :global(.qubit .dot) {
+    fill: var(--bg-elev);
+    stroke: var(--text);
+    stroke-width: 2;
+    transition: fill 0.2s, transform 0.2s;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .lattice :global(.qubit:hover .dot) {
+    transform: scale(1.12);
+  }
+  .lattice :global(.qubit:focus-visible .dot) {
+    stroke: var(--accent);
+    stroke-width: 3.5;
+  }
+  .lattice :global(.qubit.err .dot) {
+    fill: var(--q-err);
+    stroke: var(--q-err);
+  }
+  .lattice :global(.qubit .lbl) {
+    font: 700 14px var(--font-mono);
+    text-anchor: middle;
+    dominant-baseline: central;
+    fill: #fff;
+    pointer-events: none;
+  }
+  .lattice :global(.fix) {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 2;
+    stroke-dasharray: 5 4;
+    pointer-events: none;
+    animation: spin-in 0.5s ease;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .lattice :global(.fix-badge) {
+    fill: var(--bg-elev);
+    stroke: var(--text);
+    stroke-width: 1.5;
+    pointer-events: none;
+  }
+  .lattice :global(.fix-lbl) {
+    font: 700 12px var(--font-mono);
+    text-anchor: middle;
+    dominant-baseline: central;
+    fill: var(--text);
+    pointer-events: none;
+  }
+  @keyframes spin-in {
+    from { transform: scale(1.8); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lattice :global(.face.lit) { animation: none; }
+  }
+</style>
+
+<script>
+  import { buildCode, decode, popcount, sampleErrors, type SurfaceCode } from '../scripts/surfaceCode';
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const S = 100; // spacing between data qubits (SVG units)
+  const PAD = 64;
+
+  function el<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>, parent?: Element) {
+    const node = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, String(v));
+    parent?.appendChild(node);
+    return node;
+  }
+
+  const bits = (v: number, len: number) => (len ? Array.from({ length: len }, (_, k) => (v >> k) & 1).join('') : '–');
+
+  function init(root: HTMLElement) {
+    const svg = root.querySelector<SVGSVGElement>('.lattice')!;
+    const result = root.querySelector<HTMLElement>('.result')!;
+    const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+    const codes: Record<number, SurfaceCode> = { 3: buildCode(3), 5: buildCode(5) };
+
+    let code = codes[3];
+    let xErr = 0, zErr = 0;
+    let tool: 'X' | 'Z' | 'Y' = 'X';
+    let decoded = false;
+    let rand = Math.random;
+
+    const pos = (q: number) => ({ x: PAD + (q % code.d) * S, y: PAD + Math.floor(q / code.d) * S });
+
+    function facePath(s: SurfaceCode['stabilizers'][number]) {
+      const r = S / 2;
+      const p = (row: number, col: number) => ({ x: PAD + col * S, y: PAD + row * S });
+      switch (s.boundary) {
+        case 'top': { const a = p(0, s.col), b = p(0, s.col + 1); return `M${a.x},${a.y} A${r},${r} 0 0 1 ${b.x},${b.y} Z`; }
+        case 'bottom': { const a = p(code.d - 1, s.col + 1), b = p(code.d - 1, s.col); return `M${a.x},${a.y} A${r},${r} 0 0 1 ${b.x},${b.y} Z`; }
+        case 'left': { const a = p(s.row + 1, 0), b = p(s.row, 0); return `M${a.x},${a.y} A${r},${r} 0 0 1 ${b.x},${b.y} Z`; }
+        case 'right': { const a = p(s.row, code.d - 1), b = p(s.row + 1, code.d - 1); return `M${a.x},${a.y} A${r},${r} 0 0 1 ${b.x},${b.y} Z`; }
+        default: { const a = p(s.row, s.col); return `M${a.x},${a.y} h${S} v${S} h${-S} Z`; }
+      }
+    }
+
+    function faceCentre(s: SurfaceCode['stabilizers'][number]) {
+      const off = S * 0.27;
+      const cx = PAD + (s.col + 0.5) * S, cy = PAD + (s.row + 0.5) * S;
+      switch (s.boundary) {
+        case 'top': return { x: cx, y: PAD - off };
+        case 'bottom': return { x: cx, y: PAD + (code.d - 1) * S + off };
+        case 'left': return { x: PAD - off, y: cy };
+        case 'right': return { x: PAD + (code.d - 1) * S + off, y: cy };
+        default: return { x: cx, y: cy };
+      }
+    }
+
+    function draw() {
+      const size = 2 * PAD + (code.d - 1) * S;
+      svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+      svg.replaceChildren();
+      const faces = el('g', {}, svg);
+      code.stabilizers.forEach((s) => {
+        const idx = (s.type === 'X' ? code.xStabs : code.zStabs).indexOf(s);
+        el('path', { d: facePath(s), class: `face ${s.type}`, 'data-type': s.type, 'data-idx': idx }, faces);
+        const c = faceCentre(s);
+        const t = el('text', { x: c.x, y: c.y, class: 'face-label', 'aria-hidden': 'true' }, faces);
+        t.textContent = s.type;
+      });
+      const grid = el('g', {}, svg);
+      for (let r = 0; r < code.d; r++) {
+        el('line', { x1: PAD, y1: PAD + r * S, x2: PAD + (code.d - 1) * S, y2: PAD + r * S, class: 'edge' }, grid);
+        el('line', { x1: PAD + r * S, y1: PAD, x2: PAD + r * S, y2: PAD + (code.d - 1) * S, class: 'edge' }, grid);
+      }
+      el('g', { class: 'fixes' }, svg);
+      const qubits = el('g', {}, svg);
+      for (let q = 0; q < code.n; q++) {
+        const { x, y } = pos(q);
+        const g = el('g', { class: 'qubit', role: 'button', tabindex: 0, 'data-q': q }, qubits);
+        el('circle', { cx: x, cy: y, r: 30, class: 'hit' }, g);
+        el('circle', { cx: x, cy: y, r: 17, class: 'dot' }, g);
+        el('text', { x, y, class: 'lbl', 'aria-hidden': 'true' }, g);
+        g.addEventListener('click', () => toggle(q));
+        g.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(q); }
+        });
+      }
+      update();
+    }
+
+    function errorAt(q: number) {
+      const x = (xErr >> q) & 1, z = (zErr >> q) & 1;
+      return x && z ? 'Y' : x ? 'X' : z ? 'Z' : '';
+    }
+
+    function toggle(q: number) {
+      if (tool !== 'Z') xErr ^= 1 << q;
+      if (tool !== 'X') zErr ^= 1 << q;
+      decoded = false;
+      update();
+    }
+
+    function update() {
+      const r = decode(code, xErr, zErr);
+      // X errors light Z-checks; Z errors light X-checks
+      svg.querySelectorAll<SVGPathElement>('.face').forEach((f) => {
+        const k = Number(f.dataset.idx);
+        const syn = f.dataset.type === 'Z' ? r.xSyndrome : r.zSyndrome;
+        f.classList.toggle('lit', ((syn >> k) & 1) === 1);
+      });
+      svg.querySelectorAll<SVGGElement>('.qubit').forEach((g) => {
+        const q = Number(g.dataset.q);
+        const e = errorAt(q);
+        g.classList.toggle('err', !!e);
+        g.querySelector('.lbl')!.textContent = e;
+        g.setAttribute('aria-label', `Data qubit row ${Math.floor(q / code.d) + 1}, column ${(q % code.d) + 1}: ${e ? `${e} error` : 'no error'}`);
+      });
+      const fixes = svg.querySelector('.fixes')!;
+      fixes.replaceChildren();
+      const weight = popcount(xErr | zErr);
+      out('weight').textContent = String(weight);
+      out('zsyn').textContent = bits(r.xSyndrome, code.zStabs.length);
+      out('xsyn').textContent = bits(r.zSyndrome, code.xStabs.length);
+
+      if (!decoded) {
+        result.innerHTML = weight
+          ? `Lit checks are the <strong>syndrome</strong>: all a real device gets to see. Press <strong>Decode</strong> to infer the error.`
+          : `Click a data qubit (circle) to inject an error. A d = ${code.d} code corrects any ${(code.d - 1) / 2} error${code.d > 3 ? 's' : ''}.`;
+        return;
+      }
+
+      for (let q = 0; q < code.n; q++) {
+        const fx = (r.xCorrection >> q) & 1, fz = (r.zCorrection >> q) & 1;
+        if (!fx && !fz) continue;
+        const { x, y } = pos(q);
+        el('circle', { cx: x, cy: y, r: 26, class: 'fix' }, fixes);
+        el('circle', { cx: x + 24, cy: y + 24, r: 11, class: 'fix-badge' }, fixes);
+        const t = el('text', { x: x + 24, y: y + 24, class: 'fix-lbl' }, fixes);
+        t.textContent = fx && fz ? 'Y' : fx ? 'X' : 'Z';
+      }
+      if (!weight) {
+        result.textContent = 'No errors, nothing to correct.';
+      } else if (!r.logicalXError && !r.logicalZError) {
+        const exact = r.xCorrection === xErr && r.zCorrection === zErr;
+        result.innerHTML = `<span class="ok">✓ Corrected.</span> ${
+          exact ? 'The decoder found exactly the error that happened.' : 'The correction differs from the error, but only by a stabilizer, so the logical qubit is untouched.'
+        }`;
+      } else {
+        const which = [r.logicalXError && 'X', r.logicalZError && 'Z'].filter(Boolean).join(' and ');
+        result.innerHTML = `<span class="fail">✗ Logical ${which} error.</span> The most likely explanation of the syndrome was wrong: error + correction form a logical operator, which flips the encoded qubit.`;
+      }
+    }
+
+    root.querySelectorAll<HTMLButtonElement>('[data-distance]').forEach((b) =>
+      b.addEventListener('click', () => {
+        root.querySelectorAll('[data-distance]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        code = codes[Number(b.dataset.distance)];
+        xErr = zErr = 0;
+        decoded = false;
+        draw();
+      })
+    );
+    root.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach((b) =>
+      b.addEventListener('click', () => {
+        root.querySelectorAll('[data-tool]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        tool = b.dataset.tool as typeof tool;
+      })
+    );
+    root.querySelector('[data-action="decode"]')!.addEventListener('click', () => { decoded = true; update(); });
+    root.querySelector('[data-action="clear"]')!.addEventListener('click', () => { xErr = zErr = 0; decoded = false; update(); });
+    root.querySelector('[data-action="random"]')!.addEventListener('click', () => {
+      // independent X and Z flips, each with p = 10%; retry until something happens
+      do {
+        xErr = sampleErrors(code.n, 0.1, rand);
+        zErr = sampleErrors(code.n, 0.1, rand);
+      } while (!(xErr | zErr));
+      decoded = false;
+      update();
+    });
+
+    draw();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-qec]').forEach(init);
+</script>
