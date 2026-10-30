@@ -1,6 +1,8 @@
 ---
 role: Associate Software Engineer
-org: Mphasis Ltd · Mumbai
+org: Mphasis Ltd
+orgUrl: https://www.mphasis.com/home.html
+location: Mumbai
 start: Dec 2021
 end: Feb 2024
 kind: industry

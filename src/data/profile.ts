@@ -6,6 +6,7 @@ export const profile = {
   openTo: 'Open to PhD positions in quantum computing, research collaborations, and AI/ML engineering roles.',
   location: 'Pune, India',
   employer: 'Stark Digital Media Services',
+  employerUrl: 'https://www.starkdigital.net/',
   email: 'awateprateek@gmail.com',
   bio: [
     "I'm an AI engineer, currently AI Tech Lead at Stark Digital Media Services in Pune, with 4.5+ years of experience shipping computer vision and LLM systems to production, from face recognition running on a Raspberry Pi to air-gapped Llama 3 deployments and microservices serving hundreds of users.",
@@ -35,13 +36,17 @@ export const profile = {
   education: [
     {
       degree: 'MS, Computer Science (OMSCS)',
-      school: 'Georgia Institute of Technology, Atlanta, USA',
+      school: 'College of Computing, Georgia Institute of Technology, Atlanta, USA',
+      institution: 'Georgia Institute of Technology',
+      url: 'https://www.cc.gatech.edu/',
       period: 'Expected Dec 2027',
-      detail: 'Research: CS6999 with Prof. Steve Mussmann (LITE Batching) · DS@GT QuantumCLEF team',
+      detail: 'Research: CS6999 with Prof. Steve Mussmann in the Human-Augmented Analytics Group (LITE Batching) · DS@GT QuantumCLEF team',
     },
     {
       degree: 'B.E., Electronics and Telecommunication',
       school: 'Dr. D. Y. Patil School of Engineering, Pune, India',
+      institution: 'Dr. D. Y. Patil School of Engineering',
+      url: '',
       period: 'May 2021',
       detail: '',
     },
@@ -58,7 +63,7 @@ export const profile = {
     { date: 'Sep 2026', text: 'Two papers published in the CLEF 2026 Working Notes (CEUR-WS Vol. 4283), Jena, Germany.' },
     { date: '2026', text: 'Ranked 1st among pure quantum-annealing submissions (4th overall) in QuantumCLEF 2026, Task 2.' },
     { date: '2026', text: 'Our team ranked 1st overall in CLEF 2026 JOKER Task 2 (English→French pun translation).' },
-    { date: 'Spring 2026', text: 'Graduate research (CS6999) at Georgia Tech with Prof. Steve Mussmann on training-batch selection.' },
+    { date: 'Spring 2026', text: "Graduate research (CS6999) in Georgia Tech's Human-Augmented Analytics Group with Prof. Steve Mussmann on training-batch selection." },
   ],
   links: {
     github: 'https://github.com/Patrickoo7',

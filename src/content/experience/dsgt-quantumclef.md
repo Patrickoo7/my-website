@@ -1,6 +1,8 @@
 ---
 role: Researcher, QuantumCLEF 2026 (Task 2)
-org: DS@GT · Georgia Tech
+org: Data Science at Georgia Tech (DS@GT)
+orgUrl: https://datasciencegt.org/
+location: Georgia Tech
 start: "2026"
 end: "2026"
 kind: research

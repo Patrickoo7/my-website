@@ -1,6 +1,8 @@
 ---
 role: AI Tech Lead
-org: Stark Digital Media Services · Baner, Pune
+org: Stark Digital Media Services
+orgUrl: https://www.starkdigital.net/
+location: Baner, Pune
 start: Oct 2026
 end: Present
 kind: industry

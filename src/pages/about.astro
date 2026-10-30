@@ -30,7 +30,7 @@ import { url } from '../data/url';
           <div class="card reveal">
             <span class="mono period">{e.period}</span>
             <h3>{e.degree}</h3>
-            <p class="school">{e.school}</p>
+            <p class="school">{e.url ? <a href={e.url} target="_blank" rel="noopener">{e.school}</a> : e.school}</p>
             {e.detail && <p class="detail">{e.detail}</p>}
           </div>
         ))
@@ -80,6 +80,8 @@ import { url } from '../data/url';
   .edu { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
   .period { font-size: 0.8rem; color: var(--accent-2); }
   .school { color: var(--accent); margin: 0 0 6px; }
+  .school a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent); text-underline-offset: 3px; }
+  .school a:hover { text-decoration-color: currentColor; }
   .detail { color: var(--text-dim); font-size: 0.92rem; margin: 0; }
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
   .list { color: var(--text-dim); padding-left: 1.1em; }

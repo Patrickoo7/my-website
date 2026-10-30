@@ -1,6 +1,7 @@
 ---
 role: Senior AI Engineer
-org: Pridenexus Pvt Ltd · Pune
+org: Pridenexus Pvt Ltd
+location: Pune
 start: Dec 2025
 end: Aug 2026
 kind: industry

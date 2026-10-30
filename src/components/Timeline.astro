@@ -2,6 +2,10 @@
 interface Item {
   role: string;
   org: string;
+  orgUrl?: string;
+  location?: string;
+  supervisor?: string;
+  supervisorUrl?: string;
   start: string;
   end: string;
   kind: string;
@@ -21,7 +25,16 @@ const { items } = Astro.props;
           <span class="kind">{it.kind}</span>
         </div>
         <h3>{it.role}</h3>
-        <p class="org">{it.org}</p>
+        <p class="org">
+          {it.orgUrl ? <a href={it.orgUrl} target="_blank" rel="noopener">{it.org}</a> : it.org}
+          {it.location && <span class="loc"> · {it.location}</span>}
+          {it.supervisor && (
+            <span class="loc">
+              {' · supervised by '}
+              {it.supervisorUrl ? <a href={it.supervisorUrl} target="_blank" rel="noopener">{it.supervisor}</a> : it.supervisor}
+            </span>
+          )}
+        </p>
         <div class="body" set:html={it.html} />
       </li>
     ))
@@ -62,6 +75,9 @@ const { items } = Astro.props;
   .kind { color: var(--accent-2); font-family: var(--font-sans); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.72rem; }
   h3 { margin: 4px 0 0; }
   .org { color: var(--accent); margin: 0 0 8px; font-weight: 500; }
+  .org a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent); text-underline-offset: 3px; }
+  .org a:hover { text-decoration-color: currentColor; }
+  .loc { color: var(--text-dim); font-weight: 400; }
   .body { color: var(--text-dim); font-size: 0.95rem; }
   .body :global(ul) { margin: 0; padding-left: 1.1em; }
   .body :global(li) { padding: 0; margin-bottom: 4px; }
