@@ -1,6 +1,8 @@
 ---
 role: Assistant Tech Support
-org: Shri Girijatmak Pvt Ltd · Pune
+org: Shri Girijatmak Pvt Ltd
+orgUrl: https://shrigirijatmak.co.in/
+location: Pune
 start: Apr 2021
 end: Dec 2021
 kind: industry

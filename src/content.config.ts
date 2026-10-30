@@ -39,6 +39,10 @@ const experience = defineCollection({
   schema: z.object({
     role: z.string(),
     org: z.string(),
+    orgUrl: z.string().url().optional(),
+    location: z.string().optional(),
+    supervisor: z.string().optional(),
+    supervisorUrl: z.string().url().optional(),
     start: z.string(),
     end: z.string().default('Present'),
     kind: z.enum(['research', 'industry', 'teaching', 'other']).default('industry'),

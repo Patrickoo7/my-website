@@ -1,6 +1,7 @@
 ---
 role: AI Engineer
-org: Technocraft Solutions · Mumbai
+org: Technocraft Solutions
+location: Mumbai
 start: Dec 2024
 end: Dec 2025
 kind: industry
