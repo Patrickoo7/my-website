@@ -43,6 +43,8 @@ const experience = defineCollection({
     location: z.string().optional(),
     supervisor: z.string().optional(),
     supervisorUrl: z.string().url().optional(),
+    product: z.string().optional(),
+    productUrl: z.string().url().optional(),
     start: z.string(),
     end: z.string().default('Present'),
     kind: z.enum(['research', 'industry', 'teaching', 'other']).default('industry'),

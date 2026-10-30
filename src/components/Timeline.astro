@@ -6,6 +6,8 @@ interface Item {
   location?: string;
   supervisor?: string;
   supervisorUrl?: string;
+  product?: string;
+  productUrl?: string;
   start: string;
   end: string;
   kind: string;
@@ -28,6 +30,12 @@ const { items } = Astro.props;
         <p class="org">
           {it.orgUrl ? <a href={it.orgUrl} target="_blank" rel="noopener">{it.org}</a> : it.org}
           {it.location && <span class="loc"> · {it.location}</span>}
+          {it.product && (
+            <span class="loc">
+              {' · Product: '}
+              {it.productUrl ? <a href={it.productUrl} target="_blank" rel="noopener">{it.product}</a> : it.product}
+            </span>
+          )}
           {it.supervisor && (
             <span class="loc">
               {' · supervised by '}
